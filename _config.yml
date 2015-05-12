@@ -13,6 +13,9 @@ description:      'TK'
 url:              https://github.com/newsdev
 baseurl:          /
 
+analytics:
+  tracking_id:    'UA-60337978-3'
+
 authors:
   -
     name:           'TK'
