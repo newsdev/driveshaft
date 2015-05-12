@@ -6,6 +6,16 @@
   <!-- Enable responsiveness on mobile devices-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
+  <meta name="description" content="{{ site.description }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="">
+  <meta name="twitter:title" content="{{ site.title }}">
+  <meta name="twitter:description" content="{{ site.description }}">
+  <meta name="twitter:image" content="">
+  <meta name="og:image" content="">
+  <meta name="og:site_name" content="{{ site.title }}">
+  <meta name="og:url" content="">
+
   <title>
     {% if page.title == "Home" %}
       {{ site.title }} &middot; {{ site.tagline }}
@@ -18,12 +28,14 @@
   <link rel="stylesheet" href="{{ site.baseurl }}public/css/poole.css">
   <link rel="stylesheet" href="{{ site.baseurl }}public/css/syntax.css">
   <link rel="stylesheet" href="{{ site.baseurl }}public/css/hyde.css">
+  <link rel="stylesheet" href="{{ site.baseurl }}public/css/nyt.css">
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
   <!-- Icons -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ site.baseurl }}public/apple-touch-icon-144-precomposed.png">
                                  <link rel="shortcut icon" href="{{ site.baseurl }}public/favicon.ico">
 
-  <!-- RSS -->
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <!-- Fonts -->
+  <script src="//typeface.nytimes.com/zam5nzz.js"></script>
+  <script>try{Typekit.load();}catch(e){}</script>
 </head>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html en="en">
+
+  {% include head.html %}
+
+  <body>
+
+    {% include sidebar.html %}
+
+    <div class="content container">
+      {{content}}
+
+      <footer>
+        {% if site.authors %}
+          <p>Created by
+            {% for author in site.authors %}
+            <a href="{{ author.url }}">{{ author.name }}</a>{% if forloop.rindex != 1 and forloop.length > 1 %}{% if forloop.rindex > 2 %},{% else %} and{% endif %}{% endif %}
+            {% endfor %}
+            / <a href="https://github.com/newsdev">The New York Times</a>
+          </p>
+        {% endif %}
+        <p>&copy; {{ site.time | date: '%Y' }} The New York Times Company</p>
+      </footer>
+    </div>
+
+  </body>
+</html>

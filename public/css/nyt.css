@@ -1,0 +1,74 @@
+html {
+  font-family: "nyt-franklin", arial, helvetica, sans-serif;
+}
+.sidebar-about h1 {
+  font-size: 3rem;
+}
+.sidebar-about img {
+  width: 200px;
+  display: block;
+  margin: 0 auto;
+}
+.sidebar-nav-item {
+  line-height: 30px;
+}
+.sidebar-nav-hash {
+  position: relative;
+  padding-left: 20px;
+}
+.sidebar-nav-hash:before {
+  content: "#";
+  font-family: "nyt-stymie", serif;
+  color: #fff;
+  margin: 0 8px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-decoration: none;
+}
+.description {
+  line-height:1.7rem;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+.tagline {
+  font-weight: normal;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+}
+.tagline:before {
+  content: "“";
+  text-align: right;
+  left: -1.4rem;
+  top: 0.4rem;
+}
+.tagline:after {
+  content: "”";
+  right: -1.4rem;
+  bottom: -0.4rem;
+}
+.tagline:before, .tagline:after {
+  color: #444;
+  width: 1rem;
+  display: inline-block;
+  position: absolute;
+  font-size: 2rem;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: "nyt-stymie", serif;
+}
+
+footer {
+  border-top: 1px solid #eee;
+  margin-top: 15px;
+  padding-top: 25px;
+}
+footer p {
+  font-size: 0.8em;
+  opacity: 0.5;
+}
