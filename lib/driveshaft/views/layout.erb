@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="//int.nyt.com/cdn/adcom/0.1.0/css/adcom.css" rel="stylesheet">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="">
+  <link rel="shortcut icon" href="">
+
+  <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+</head>
+<body>
+
+  <div class="navbar navbar-default navbar-primary">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-deck" href="#"></a>
+        <a class="navbar-brand" href="/">Driveshaft</a>
+      </div>
+      <ul class="nav navbar-nav navbar-left">
+        <li class="navbar-summary"><span>publish google drive files as json</span></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right navbar-bits">
+        <% if content_for?(:instructions_content) %>
+          <%# Client-side authentication %>
+          <% if $google_client_secrets_installed || ($google_client_secrets_web && session && session[:email]) %>
+            <li>
+              <a href="/auth/logout"><%= session[:email] %> (sign out)</a>
+            </li>
+          <% end %>
+          <% if $google_client_secrets_web && session && !session[:email] %>
+            <li>
+              <a href="/auth/authorize">Sign in</a>
+            </li>
+          <% end %>
+          <li class="navbar-form" data-toggle="collapse" href="#page-instructions">
+            <button type="button" class="btn btn-sm btn-muted" data-toggle="button">Instructions</button>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="drawer drawer-default drawer-instructions collapse" id="page-instructions">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-offset-1 col-md-8 col-sm-12 col-sm-offset-0">
+          <%= yield_content :instructions_content %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <% if flash[:error] || flash[:info] %>
+      <br>
+    <% end %>
+    <% if flash[:error] %>
+      <br>
+      <div class="alert alert-danger" role="alert"><%= flash[:error] %></div>
+    <% end %>
+    <% if flash[:info] %>
+      <br>
+      <div class="alert alert-info" role="alert"><%= flash[:info] %></div>
+    <% end %>
+
+    <%= yield %>
+  </div>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script src="//int.nyt.com/cdn/adcom/0.1.0/js/adcom.js"></script>
+
+  <script type="text/javascript">
+    $('#page-instructions').persist('attribute', 'class', 'collapse collapsed in');
+    $.fn.list.Constructor.DEFAULTS.templateEngine = _.template;
+  </script>
+</body>
+</html>

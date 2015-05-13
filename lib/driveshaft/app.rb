@@ -1,0 +1,300 @@
+require 'json'
+require 'date'
+
+require 'sinatra/base'
+require 'sinatra/content_for'
+require 'rack-flash'
+
+require 'google/api_client'
+require 'google/api_client/auth/file_storage'
+require 'google/api_client/auth/installed_app'
+
+require './lib/driveshaft/exports'
+require './lib/driveshaft/version'
+
+module Driveshaft
+  class App < Sinatra::Base
+    helpers Sinatra::ContentFor
+
+    set :raise_errors, false
+    set :protection, :except => :path_traversal
+
+    use Rack::Session::Cookie,
+        :key => 'rack.session',
+        :path => '/',
+        :expire_after => 14400,
+        :secret => 'change_me'
+    use Rack::Flash, :sweep => true
+
+    configure do
+      enable :logging
+    end
+
+    get '/' do
+      redirect('/index')
+    end
+
+    # Homepage is listed under "index" to allow accessing versions appended to
+    # the path, without creating ambiguity with the "/:file" route.
+    get '/index*' do
+      if params[:splat] && params[:splat].first.match(/\.json$/)
+        params[:file] = 'settings'
+
+        if (version = params[:splat].first[1..-5]).length > 0
+          @files = get_settings($settings[:s3key].sub('.json', "-#{version}.json"))
+          @title = version
+        else
+          @files = get_settings
+        end
+
+        content_type :json
+        return @files.values.to_json
+
+      else
+        @clients = clients
+        return erb :index
+      end
+    end
+
+    get '/:file' do
+      get_file!
+      @destinations.map! do |destination|
+        bucket, key = destination
+        begin
+          object = $s3_resources.bucket(destination[:bucket]).object(destination[:key])
+          object.etag
+        rescue Aws::S3::Errors::NotFound, Aws::S3::Errors::Forbidden
+          object = nil
+        rescue
+          object = nil
+        end
+
+        destination.merge({
+          object: object,
+          etag: (object.etag[1..-2] unless object.nil?)
+        })
+      end
+
+      @clients = clients
+      return erb :file
+    end
+
+    get '/:file/versions/*' do
+      get_file!
+      bucket, key = parse_destination(params[:splat].first)
+
+      directory = key.sub(/(?<!\/)([^\/]+$)/, '')
+      basename  = File.basename(key).sub(/\.\w+$/, '')
+
+      objects = $s3.list_objects(bucket: bucket, prefix: directory, delimiter: '/').contents
+      objects.select! { |object| object.key.match(/(?:^|\/)#{basename}-\d{8}-\d{6}\.\w+$/) }
+      objects.reverse!
+
+      etags = {}
+      versions = []
+      objects.each do |object|
+        etag = object.etag[1..-2]
+        versions << {
+          bucket: bucket,
+          key: object.key,
+          url: "http://#{bucket}.s3.amazonaws.com/#{object.key}",
+          presigned_url: $s3_presigner.presigned_url(:get_object, bucket: bucket, key: key),
+          object: object,
+          etag: etag,
+
+          timestamp: object.key.match(/(\d{8}-\d{6}).\w+$/)[1],
+          copy: etags.key?(etag),
+          display: Time.strptime(File.basename(object.key).sub(/\.json$/, '').match(/(\d{8}-\d{6})$/)[1] + " +0000", "%Y%m%d-%H%M%S %Z").getlocal.strftime("%a %b %d %I:%M %p %Z")
+        }
+        etags[etag] = 1
+      end
+
+      content_type :json
+      return versions.to_json
+    end
+
+    get '/:file/edit' do
+      get_file!
+      redirect(@file['alternateLink'])
+    end
+
+    get '/:file/download' do
+      get_file!
+      begin
+        export = Driveshaft::Exports.export(@file, @export_format, *clients)
+      rescue Exception => e
+        status 500
+        export = {
+          content_type: 'application/json',
+          body: "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
+        }
+      end
+
+      content_type export[:content_type]
+      export[:body]
+    end
+
+    get '/:file/refresh' do
+      get_file!
+      @destinations.each do |destination|
+        refresh!(destination[:bucket], destination[:key])
+      end
+
+      redirect back
+    end
+
+    get '/:file/refresh/*' do
+      get_file!
+      bucket, key = parse_destination(params[:splat].first)
+      refresh!(bucket, key)
+
+      redirect back
+    end
+
+    get '/:file/restore/*' do
+      get_file!
+      bucket, key = parse_destination(params[:splat].first)
+      timestamp = key.match(/(\d{8}-\d{6}).\w+$/)[1]
+      key.gsub!(/-#{timestamp}/, '')
+
+      restore!(bucket, key, timestamp)
+
+      redirect back
+    end
+
+    private
+
+    def back
+      params[:redirect] || request.referer
+    end
+
+    def get_file!
+      # Our before filter, variable set up
+      @key = params[:file]
+
+      drive ||= clients.first.discovered_api('drive', 'v2')
+
+      clients.each do |client|
+        file_body = client.execute(
+          api_method: drive.files.get,
+          parameters: {'fileId' => @key}
+        ).body
+        @file = JSON.load(file_body)
+        break unless @file['error']
+      end
+
+      file_config = get_settings[@key] || {}
+
+      # Allow overriding default file config with querystring parameters
+      default_export_format = file_config['format'] || Driveshaft::Exports.default_format_for(@file)
+
+      @destinations = get_destinations(params) || file_config['destinations']
+      @export_format = params[:format] || default_export_format
+
+      if @file["error"]
+        flash[:error] = @file['error']['message']
+        redirect back
+      elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
+        flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:drivekey]}/edit#gid=0'>Update</a> this file's configuration to make these settings persist."
+      end
+
+    rescue Exception => e
+      flash[:error] = "Error while attempting to access file #{params[:file]}."
+      puts e.message
+      puts e.backtrace
+      redirect back
+    end
+
+    # Can we make this work for any user's individual drive folder?
+    def get_settings(path = $settings[:s3key])
+      begin
+        settings = JSON.load($s3_resources.bucket($settings[:s3bucket]).object(path).get.body).values.first
+      rescue Exception => e
+        # Bootstrap the settings json
+        settings = [{'key' => $settings[:drivekey], 'publish' => "s3://#{$settings[:s3bucket]}/#{$settings[:s3key]}"}]
+      end
+
+      files = Hash[*settings.map do |row|
+        file_config = row.dup
+        file_config['destinations'] = get_destinations(file_config) || []
+        [row['key'], file_config]
+      end.flatten]
+
+      files
+    end
+
+    # File configuration can have multiple destinations on S3, by specifying
+    # keys that begin with "publish". This method converts the values for all
+    # keys into an array of destination objects.
+    def get_destinations(file_config)
+      destinations = file_config.keys.sort.select { |k| k.match(/^publish/) }.map { |k| file_config[k] if file_config[k] && file_config[k].length > 0 }.compact
+      destinations.map! do |destination|
+        bucket, key = parse_destination(destination)
+        return nil unless bucket && key
+
+        {
+          bucket: bucket,
+          key: key,
+          url: "http://#{bucket}.s3.amazonaws.com/#{key}",
+          presigned_url: $s3_presigner.presigned_url(:get_object, bucket: bucket, key: key)
+        }
+      end
+      destinations.compact!
+      destinations if destinations.length > 0
+    end
+
+    def refresh!(bucket, key)
+      puts "Generating json for file '#{@file['title']}'"
+
+      begin
+        export = Driveshaft::Exports.export(@file, @export_format, *clients)
+        unless export[:body]
+          flash[:error] = "No output found."
+          redirect back
+        end
+      rescue Exception => e
+        flash[:error] = "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
+        redirect back
+      end
+
+      puts "Writing json file to #{bucket}/#{key}"
+      objects = [
+        $s3_resources.bucket(bucket).object(key),
+        $s3_resources.bucket(bucket).object(key.sub(/(\.\w+)$/, "-#{Time.now.utc.strftime("%Y%m%d-%H%M%S")}\\1"))
+      ]
+
+      put_options = {acl: 'public-read'}.merge(export)
+      objects.each do |object|
+        object.put(put_options)
+      end
+
+      puts "File written to #{bucket}/#{key}"
+    rescue Exception => e
+      flash[:error] = "Error writing to #{bucket}/#{key}"
+      puts e.message
+      puts e.backtrace
+      redirect back
+    end
+
+    def restore!(bucket, key, timestamp)
+      timestamped_key = key.sub(/(?=\.\w+$)/, "-#{timestamp}")
+      $s3_resources.bucket(bucket).object(key).copy_from({
+        copy_source: File.join(*[bucket, timestamped_key].compact)
+      })
+    end
+
+    # Converts a URL-style S3 address into the component bucket and key
+    # s3://BUCKET/KEY
+    # http://BUCKET/KEY
+    # http://BUCKET.s3.amazonaws.com/KEY
+    # http://s3.amazonaws.com/BUCKET/KEY
+    def parse_destination(destination)
+      components = destination.match(/(?:(?:https?|s3):\/\/)?(?:(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)|([\.\-_\w]+?)?)(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)?\/(?:([\.\-_\w]*?)\/)?(.+)/).to_a.compact
+      [components[1], components[2..-1].join('/')]
+    rescue Exception => e
+      puts "Error parsing S3 destination from '#{destination}'."
+      nil
+    end
+
+  end
+end

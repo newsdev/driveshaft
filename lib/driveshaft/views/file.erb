@@ -1,0 +1,115 @@
+<style>
+  .list > .list-item.history-item {
+    clear: both;
+    padding: 0 0 8px;
+    margin: 0;
+  }
+  .history-item .btn.btn-info { opacity: 0.2; }
+  .history-item .btn.btn-info:hover { opacity: 1.0; }
+  .history-item.destination { font-weight: bold; }
+  .history-item.copy a, .history-item.copy .btn {
+    pointer-events: none;
+    font-weight: normal;
+    color: #888;
+  }
+</style>
+
+<% content_for :instructions_content do %>
+  <p>This page lets you publish the contents of a Google Spreadsheet or Document as a <code>.json</code> file that can be used by a graphic or interactive. Click on <span class="btn btn-sm btn-default disabled">Publish</span> to update the published file from the Google Spreadsheet or Document.</p>
+
+  <p>Every time you update it, the previous versions remain accessible. You can click on one of the previous, timestamped files below to view older versions. Click on <span class="btn btn-sm btn-info disabled">Restore</span> next to any version to republish the file with those contents (this lets you "rewind" the published <code>.json</code> file, without having to undo edits within the source Spreadsheet or Document).</p>
+
+  <h5>What do the different columns mean?</h5>
+  <p>If there is more than one column on this page, that means that you can publish this file as json to several different <strong>environments</strong> (generally, this means a staging environment for testing, and a production environment for the live site). If you're unsure which environment to use, ask whoever is using the published json file.</p>
+<% end %>
+
+<br>
+
+<div class="btn-group pull-right">
+  <a href="/<%= @key %>/download<%= "?#{request.query_string}" if request.query_string %>" class="btn btn-sm btn-muted"><%= @export_format %> <i class="glyphicon glyphicon-cloud-download"></i></a>
+  <button type="button" class="btn btn-sm btn-muted dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <% Driveshaft::Exports::FORMATS.each do |format| %>
+      <% next if format.to_s == @export_format.to_s %>
+      <li><a href="/<%= @key %>?<%= "#{request.query_string.sub(/\??format=#{@export_format}/, '')}" if request.query_string %>format=<%= format %>"><%= format %></a></li>
+    <% end %>
+  </ul>
+</div>
+
+<h3><%= @file['title'] %></h3>
+
+<p class="help-block">
+  <a class="btn btn-sm btn-default" target="_blank" href="<%= @file['alternateLink'] %>">Edit the source <%= @file['mimeType'].split('.').last.titleize %></a>
+</p>
+
+<hr>
+
+<% if @destinations.length == 0 %>
+  <p class="help-block">
+    You must specify at least one destination on S3 for this file to be published.
+  </p>
+<% end %>
+
+<div class="row">
+  <% @destinations.each_with_index do |destination, idx| %>
+    <div class="col-sm-<%= {1 => 4, 2 => 4, 3 => 4, 4 => 3}[@destinations.length] || 3 %>">
+      <h4>
+        <%= destination[:bucket] %>
+        <small><a href="<%= destination[:url] %>" target="_blank"><%= destination[:key] %></a></small>
+      </h4>
+
+      <% if !destination[:object].nil? %>
+        <p class="help-block">Last Modified on <%= (destination[:object].last_modified.utc).getlocal.strftime("%a %b %d %I:%M %p %Z") %></p>
+
+        <p>
+          <a class="btn btn-sm btn-danger btn-block" href='/<%= @key %>/refresh/<%= destination[:url] %><%= "?#{request.query_string}" if request.query_string %>'>
+            Publish to <%= destination[:bucket] %> <i class="glyphicon glyphicon-cloud-upload"></i>
+          </a>
+        </p>
+
+        <hr class="hidden-xs">
+
+        <h4>History</h4>
+        <div id="history-<%= idx %>" class="list loading" data-loading-text="Loading versions"
+          data-remote="<%= request.path_info %>/versions/<%= destination[:url] %>">
+          <%#
+            The double-% sequences here (<%%) serve to escape underscore
+            template syntax when this file is first parsed as ERB. The HTML
+            served to the client will have double %% replaced with single %.
+            "<%%" wil become "<%".
+          %>
+          <div class="list-item history-item <%%= (etag == '<%= destination[:etag] %>') ? 'destination' : '' %> <%%= copy ? 'copy' : '' %>">
+            <a href="<%%= presigned_url %>" target="_blank">
+              <%%= display %>
+            </a>
+            <%% if (copy) { %>
+              <span class="btn btn-xs btn-link disabled pull-right" href="#"><i class="glyphicon glyphicon-chevron-up"></i> Copy</span>
+            <%% } else if (etag != '<%= destination[:etag] %>') { %>
+              <a class="btn btn-xs btn-info pull-right" href="/<%= @key %>/restore/<%%= url %>">Restore</a>
+            <%% } else { %>
+              <span class="btn btn-xs btn-success disabled pull-right" href="#">Current</span>
+            <%% } %>
+          </div>
+        </div>
+
+      <% else %>
+        <p><a class="btn btn-sm btn-danger" href='/<%= @key %>/refresh/<%= destination[:url] %>'>Publish to <%= destination[:bucket] %></a></p>
+
+        <p class="text-danger">File has not yet been published.</p>
+      <% end %>
+
+      <hr class="visible-xs-block">
+    </div>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    <% @destinations.each_with_index do |destination, idx| %>
+      $('#history-<%= idx %>').list()
+    <% end %>
+  })
+</script>
