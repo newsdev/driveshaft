@@ -3,6 +3,7 @@ html {
 }
 .sidebar-about h1 {
   font-size: 3rem;
+  font-family: "nyt-stymie", serif;
 }
 .sidebar-about img {
   width: 200px;
