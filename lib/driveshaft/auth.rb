@@ -10,6 +10,7 @@ module Driveshaft
         if !web_client.authorization.access_token && !request.path_info.match(/^\/auth\//)
           redirect('/auth/authorize')
         end
+
       end
     end
 
@@ -98,7 +99,7 @@ module Driveshaft
     end
 
     get '/auth/authorize' do
-      redirect web_client.authorization.authorization_uri.to_s
+      redirect web_client.authorization.authorization_uri(approval_prompt: :force).to_s
     end
 
     get '/auth/callback' do

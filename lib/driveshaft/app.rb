@@ -38,10 +38,8 @@ module Driveshaft
     # the path, without creating ambiguity with the "/:file" route.
     get '/index*' do
       if params[:splat] && params[:splat].first.match(/\.json$/)
-        params[:file] = 'settings'
-
         if (version = params[:splat].first[1..-5]).length > 0
-          @files = get_settings($settings[:s3key].sub('.json', "-#{version}.json"))
+          @files = get_settings(version)
           @title = version
         else
           @files = get_settings
@@ -174,7 +172,7 @@ module Driveshaft
 
       drive ||= clients.first.discovered_api('drive', 'v2')
 
-      clients.each do |client|
+      clients.each_with_index do |client, idx|
         file_body = client.execute(
           api_method: drive.files.get,
           parameters: {'fileId' => @key}
@@ -188,14 +186,14 @@ module Driveshaft
       # Allow overriding default file config with querystring parameters
       default_export_format = file_config['format'] || Driveshaft::Exports.default_format_for(@file)
 
-      @destinations = get_destinations(params) || file_config['destinations']
+      @destinations = get_destinations(params) || file_config['destinations'] || []
       @export_format = params[:format] || default_export_format
 
       if @file["error"]
         flash[:error] = @file['error']['message']
         redirect back
       elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
-        flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:drivekey]}/edit#gid=0'>Update</a> this file's configuration to make these settings persist."
+        flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:index][:key]}/edit#gid=0'>Update or add</a> this file's configuration to make these settings persist."
       end
 
     rescue Exception => e
@@ -206,12 +204,16 @@ module Driveshaft
     end
 
     # Can we make this work for any user's individual drive folder?
-    def get_settings(path = $settings[:s3key])
+    def get_settings(version = nil) # TKTKTK
+      return {} unless $settings[:index][:key]
+
       begin
-        settings = JSON.load($s3_resources.bucket($settings[:s3bucket]).object(path).get.body).values.first
+        bucket, key = parse_destination($settings[:index][:destination])
+        key = key.sub(/\.json$/, "-#{version}.json") if version
+        settings = JSON.load($s3_resources.bucket(bucket).object(key).get.body).values.first
       rescue Exception => e
         # Bootstrap the settings json
-        settings = [{'key' => $settings[:drivekey], 'publish' => "s3://#{$settings[:s3bucket]}/#{$settings[:s3key]}"}]
+        settings = [{'key' => $settings[:index][:key], 'publish' => $settings[:index][:destination]}]
       end
 
       files = Hash[*settings.map do |row|

@@ -6,58 +6,102 @@
 
   <h5>Tips</h5>
   <p>Drag one of the following links to your to your bookmarks toolbar to create publishing shortcuts you can click right from your Google Drive file.</p>
-  <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-]+)/);if(match){var url='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1];window.open(url+'/refresh?redirect=' + url);}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">Publish with Driveshaft</a> <small>(will publish to all configured S3 endpoints)</small></p>
-  <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-]+)/);if(match){location='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1]}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">View in Driveshaft</a></p>
-  <p>This list is powered by a spreadsheet that gets published out as json using Driveshaft. Refreshing the list simply publishes a new version of the json based on the current spreadsheet. You can revert to a previous version by visiting the <a href="/<%= $settings[:drivekey] %>">Driveshaft configuration</a> spreadsheet's page.</p>
+  <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-_]+)/);if(match){var url='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1];window.open(url+'/refresh?redirect=' + url);}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">Publish with Driveshaft</a> <small>(will publish to all configured S3 endpoints)</small></p>
+  <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-_]+)/);if(match){location='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1]}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">View in Driveshaft</a></p>
+  <% if $settings[:index][:key] %>
+    <p>This list is powered by a spreadsheet that gets published out as json using Driveshaft. Refreshing the list simply publishes a new version of the json based on the current spreadsheet. You can revert to a previous version by visiting the <a href="/<%= $settings[:index][:key] %>">Driveshaft configuration</a> spreadsheet's page.</p>
+  <% end %>
 <% end %>
 
 <br>
 
-<div class="form-group glyphicon-input">
-  <input class="form-control" type="text" data-filter="name,key" data-target="#files" placeholder="Search files..." data-trigger="keyup">
-  <i class="glyphicon glyphicon-search"></i>
-</div>
-
-<div class="form-group">
-  <span>
-    <a class="btn btn-sm btn-default" target="_blank" href="https://docs.google.com/a/nytimes.com/spreadsheets/d/<%= $settings[:drivekey] %>/edit#gid=0">Add a file</a>
-    <a class="btn btn-sm btn-danger" href="/<%= $settings[:drivekey] %>/refresh">Refresh this list</a>
-  </span>
-  <span class="pull-right text-muted">Publishing to...</span>
-</div>
-
-<div id="files" class="list list-default list-bordered loading"
-  data-remote="<%= request.fullpath %>.json" data-loading-text="Fetching Files">
-  <%#
-    The double-% sequences here (<%%) serve to escape underscore
-    template syntax when this file is first parsed as ERB. The HTML
-    served to the client will have double %% replaced with single %.
-    "<%%" wil become "<%".
-  %>
-  <div class="list-item">
-    <div class="content-labels col-sm-1">
-      <a class="btn btn-xs btn-default" href="/<%%= key %>/edit" target="_blank">Edit File</a>
+<h5>Look up a file</h5>
+<form class="form-horizontal" id="lookup-by-url" data-action="false">
+  <div class="form-group">
+    <div class="col-sm-5">
+      <input name="url" pattern=".*?(?:/d/([\w-_]+))|(?:([\w-_]+)).*?" class="form-control input-sm" type="text" placeholder="URL or ID of Google Drive file" required>
     </div>
-    <div class="content-primary col-xs-12 col-sm-11 clearfix">
-      <h4 class="pull-left">
-        <a href="/<%%= key %>"><%%= name || key %></a>
-      </h4>
-
-      <p class="text-right">
-        <%% destinations.forEach(function(destination) { %>
-          <a class="btn btn-sm btn-default" href="<%%= destination.presigned_url %>" target="_blank"><%%= destination.bucket %></a>
-        <%% }) %>
-      </p>
+    <div class="col-sm-5">
+      <input name="destinations" class="form-control input-sm" type="text" placeholder="List of destinations on S3 (optional)">
+    </div>
+    <div class="col-sm-2">
+      <input class="btn btn-primary btn-sm btn-block" type="submit" value="Submit">
     </div>
   </div>
-</div>
+</form>
 
-<footer>
-  <p><a href="/<%= $settings[:drivekey] %>">Restore</a> an old version of this list.</p>
-</footer>
+<hr>
+
+<% if $settings[:index][:key] %>
+  <div class="form-group glyphicon-input">
+    <input class="form-control" type="text" data-filter="name,key" data-target="#files" placeholder="Search files..." data-trigger="keyup">
+    <i class="glyphicon glyphicon-search"></i>
+  </div>
+
+  <div class="form-group">
+    <span>
+      <a class="btn btn-sm btn-default" target="_blank" href="https://docs.google.com/a/nytimes.com/spreadsheets/d/<%= $settings[:index][:key] %>/edit#gid=0">Add a file</a>
+      <a class="btn btn-sm btn-danger" href="/<%= $settings[:index][:key] %>/refresh">Refresh this list</a>
+    </span>
+    <span class="pull-right text-muted">Publishing to...</span>
+  </div>
+
+  <div id="files" class="list list-default list-bordered loading"
+    data-remote="<%= request.fullpath %>.json" data-loading-text="Fetching Files">
+    <%#
+      The double-% sequences here (<%%) serve to escape underscore
+      template syntax when this file is first parsed as ERB. The HTML
+      served to the client will have double %% replaced with single %.
+      "<%%" wil become "<%".
+    %>
+    <div class="list-item">
+      <div class="content-labels col-sm-1">
+        <a class="btn btn-xs btn-default" href="/<%%= key %>/edit" target="_blank">Edit File</a>
+      </div>
+      <div class="content-primary col-xs-12 col-sm-11 clearfix">
+        <h4 class="pull-left">
+          <a href="/<%%= key %>"><%%= name || key %></a>
+        </h4>
+
+        <p class="text-right">
+          <%% destinations.forEach(function(destination) { %>
+            <a class="btn btn-sm btn-default" href="<%%= destination.presigned_url %>" target="_blank"><%%= destination.bucket %></a>
+          <%% }) %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="/<%= $settings[:index][:key] %>">Restore</a> an old version of this list.</p>
+  </footer>
+<% else %>
+  <p>
+    You do not currently have an index page set up. To display a list of commonly used files, and gain the ability to store configuration for each of them, follow the instructions <a href="https://newsdev.github.io/driveshaft/">here</a>.
+  </p>
+<% end %>
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#files').list()
-  })
+    $('#files').list();
+
+    $('#lookup-by-url').form()
+      .on('submit', function(e) {
+        var pattern = new RegExp($('input[name="url"]').attr('pattern').replace(/\//g, "\\\/"));
+        var key = _.last(_.compact(e.object.url.match(pattern)));
+        var href = location.origin +  "/" + key;
+
+        if (e.object.destinations && e.object.destinations.length > 0) {
+        console.log(e.object.destinations);
+          var destinations = e.object.destinations.split(/,|\s+/);
+          href += '?';
+          href += _.map(destinations, function(destination, idx) {
+            return 'publish' + (idx + 1) + '=' + destination;
+          }).join('&');
+        }
+
+        console.log(href);
+        location.href = href;
+      })
+  });
 </script>

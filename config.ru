@@ -10,9 +10,10 @@ require 'google/api_client/client_secrets'
 # Parse environmental variables
 
 $settings = {
-  s3key: ENV['DRIVESHAFT_SETTINGS_S3KEY'],
-  s3bucket: ENV['DRIVESHAFT_SETTINGS_S3BUCKET'],
-  drivekey: ENV['DRIVESHAFT_SETTINGS_DRIVEKEY'],
+  index: {
+    destination: ENV['DRIVESHAFT_SETTINGS_INDEX_DESTINATION'],
+    key: ENV['DRIVESHAFT_SETTINGS_INDEX_KEY']
+  },
   auth: {
     required: ENV['DRIVESHAFT_SETTINGS_AUTH_REQUIRED'].to_s == 'true',
     domain: ENV['DRIVESHAFT_SETTINGS_AUTH_DOMAIN']
