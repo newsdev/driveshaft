@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="//int.nyt.com/cdn/adcom/0.1.0/css/adcom.css" rel="stylesheet">
-
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="">
   <link rel="shortcut icon" href="">
+  <title>Driveshaft</title>
 
-  <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+  <link href="<%= $settings[:asset_host] %>/adcom/dist/css/adcom.css" rel="stylesheet">
+  <script src="<%= $settings[:asset_host] %>/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
 
@@ -66,9 +66,9 @@
     <%= yield %>
   </div>
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-  <script src="//int.nyt.com/cdn/adcom/0.1.0/js/adcom.js"></script>
+  <script src="<%= $settings[:asset_host] %>/underscore/underscore-min.js"></script>
+  <script src="<%= $settings[:asset_host] %>/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="<%= $settings[:asset_host] %>/adcom/dist/js/adcom.min.js"></script>
 
   <script type="text/javascript">
     $('#page-instructions').persist('attribute', 'class', 'collapse collapsed in');
