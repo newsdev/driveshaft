@@ -7,19 +7,20 @@ permalink:        pretty
 relative_permalinks: true
 
 # Setup
-title:            TK
-tagline:          'TK'
-description:      'TK'
-url:              https://github.com/newsdev
-baseurl:          /
+title:            Driveshaft
+tagline:          'Google Drive → JSON'
+description:      'Powers your site with versioned JSON built from collaborative Google Drive documents'
+url:              https://newsdev.github.io/driveshaft
+baseurl:          /driveshaft/
+logo:             public/logo.png
 
 analytics:
   tracking_id:    'UA-60337978-3'
 
 authors:
   -
-    name:           'TK'
-    url:            https://twitter.com/TK
+    name:           'Michael Strickland'
+    url:            https://twitter.com/moriogawa
   # -
   #   name:           'TK'
   #   url:            https://twitter.com/TK
@@ -28,4 +29,4 @@ authors:
 version:          0.1.0
 
 github:
-  repo:           https://github.com/newsdev/TK
+  repo:           https://github.com/newsdev/driveshaft
