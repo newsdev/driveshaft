@@ -5,78 +5,64 @@ require './lib/driveshaft/version'
 module Driveshaft
   class App
 
-    if $settings[:auth][:required]
-      before do
-        if !web_client.authorization.access_token && !request.path_info.match(/^\/auth\//)
-          redirect('/auth/authorize')
-        end
-
-      end
-    end
-
-    after do
-      session[:access_token] = web_client.authorization.access_token
-      session[:refresh_token] = web_client.authorization.refresh_token
-      session[:expires_in] = web_client.authorization.expires_in
-      session[:issued_at] = web_client.authorization.issued_at
-    end
+    CLIENT = Google::APIClient.new(
+      application_name: 'Driveshaft',
+      application_version: Driveshaft::VERSION
+    )
 
     def clients
-      [(server_client if server_client.authorization.access_token),
-       (web_client if web_client.authorization.access_token)
-      ].compact
+      [
+        key_client,
+        service_account_client,
+        installed_client,
+        web_client
+      ].compact.select { |client| client.key || client.authorization.access_token }
     end
 
-    def server_client
-      return @server_client if @server_client
+    def service_account_client
+      return nil unless $google_service_account
 
-      @server_client = Google::APIClient.new(
-        application_name: 'Driveshaft',
-        application_version: Driveshaft::VERSION
-      )
-
-      # First attempt to get a signing key from the environment
-      if $google_service_account
+      @service_account_client ||= (
+        client = CLIENT.dup
         key = Google::APIClient::KeyUtils.load_from_pem($google_service_account['private_key'], 'notasecret')
 
-        # If we found a signing key, then authenticate using it
-        @server_client.authorization = Signet::OAuth2::Client.new(
+        client.authorization = Signet::OAuth2::Client.new(
           token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
           audience: 'https://accounts.google.com/o/oauth2/token',
           scope: 'https://www.googleapis.com/auth/drive',
           issuer: $google_service_account['client_email'],
           signing_key: key
         )
-        @server_client.authorization.fetch_access_token!
+        client.authorization.fetch_access_token!
+        client)
+    end
 
-      # If not, then try to authenticate locally
-      elsif $google_client_secrets_installed
-        credentials  = File.expand_path(ENV['GOOGLE_APICLIENT_FILESTORAGE'] || '~/.google_drive_oauth2.json')
-        file_storage = Google::APIClient::FileStorage.new(credentials)
+    def installed_client
+      return nil unless $google_client_secrets_installed
+
+      @installed_client ||= (
+        client = CLIENT.dup
+        file_storage = Google::APIClient::FileStorage.new($google_client_secrets_installed_cache)
 
         if file_storage.authorization
-          @server_client.authorization = file_storage.authorization
-
+          client.authorization = file_storage.authorization
         else
           flow = Google::APIClient::InstalledAppFlow.new(
             :client_id => $google_client_secrets_installed.client_id,
             :client_secret => $google_client_secrets_installed.client_secret,
             :scope => ['https://www.googleapis.com/auth/drive', 'email']
           )
-          @server_client.authorization = flow.authorize(file_storage)
+          client.authorization = flow.authorize(file_storage)
         end
 
-      end
-
-      @server_client
+        client)
     end
 
     def web_client
+      return nil unless $google_client_secrets_web
+
       @web_client ||= (
-        client = Google::APIClient.new(
-          application_name: 'Driveshaft',
-          application_version: Driveshaft::VERSION
-        )
+        client = CLIENT.dup
         client.authorization = $google_client_secrets_web.to_authorization.dup
         client.authorization.scope = 'https://www.googleapis.com/auth/drive email'
 
@@ -98,36 +84,79 @@ module Driveshaft
         client)
     end
 
-    get '/auth/authorize' do
-      redirect web_client.authorization.authorization_uri(approval_prompt: :force).to_s
+    def key_client
+      return nil unless $google_client_key
+
+      # Set authorization to nil tell APIClient to rely on the API Key instead
+      client = CLIENT.dup
+      client.authorization = nil
+      client.key = $google_client_key
+      client
     end
 
-    get '/auth/callback' do
-      web_client.authorization.code = params['code']
-      web_client.authorization.fetch_access_token!
+    if $google_client_secrets_web || $google_client_secrets_installed
+      # Here, `application_client` stands in for either the web application or
+      # installed / native application client, as only one can be active.
 
-      person = JSON.load(web_client.execute(
-        api_method: web_client.discovered_api('plus', 'v1').people.get,
-        parameters: {'userId' => 'me'}
-      ).body)
+      def application_client
+        installed_client || web_client
+      end
 
-      redirect('/auth/authorize') if $settings[:auth][:domain] && $settings[:auth][:domain] != person['domain']
-      session[:email] = person['emails'].first['value']
+      if $settings[:auth][:required]
+        before do
+          if !application_client.authorization.access_token && !request.path_info.match(/^\/auth\//)
+            redirect('/auth/authorize')
+          end
+        end
+      end
 
-      destination = session[:redirect]
-      session[:redirect] = nil
+      after do
+        return unless application_client.authorization.access_token
 
-      if destination && !destination.match(/^\/auth\//)
-        redirect(destination)
-      else
+        # Get the user's email address and redirect if it doesn't match the
+        # auth domain setting.
+        session[:email] ||= (
+          person = JSON.load(application_client.execute(
+            api_method: application_client.discovered_api('plus', 'v1').people.get,
+            parameters: {'userId' => 'me'}
+          ).body)
+
+          redirect('/auth/authorize') if $settings[:auth][:domain] && $settings[:auth][:domain] != person['domain']
+
+          person['emails'].first['value']
+        )
+
+        session[:access_token] = application_client.authorization.access_token
+        session[:refresh_token] = application_client.authorization.refresh_token
+        session[:expires_in] = application_client.authorization.expires_in
+        session[:issued_at] = application_client.authorization.issued_at
+      end
+
+      get '/auth/authorize' do
+        redirect application_client.authorization.authorization_uri(approval_prompt: :force).to_s
+      end
+
+      get '/auth/callback' do
+        application_client.authorization.code = params['code']
+        application_client.authorization.fetch_access_token!
+
+        destination = session[:redirect]
+        session[:redirect] = nil
+
+        if destination && !destination.match(/^\/auth\//)
+          redirect(destination)
+        else
+          redirect('/')
+        end
+      end
+
+      get '/auth/logout' do
+        session[:access_token] = session[:refresh_token] = session[:expires_in] = session[:issued_at] = session[:email] = nil
+        @web_client = @installed_client = nil
+        File.delete($google_client_secrets_installed_cache) if File.exist?($google_client_secrets_installed_cache)
         redirect('/')
       end
-    end
 
-    get '/auth/logout' do
-      session[:access_token] = session[:refresh_token] = session[:expires_in] = session[:issued_at] = session[:email] = nil
-      @web_client = nil
-      redirect('/')
     end
 
   end

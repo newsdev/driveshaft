@@ -20,22 +20,26 @@
         <li class="navbar-summary"><span>publish google drive files as json</span></li>
       </ul>
       <ul class="nav navbar-nav navbar-right navbar-bits">
+
         <% if content_for?(:instructions_content) %>
           <%# Client-side authentication %>
-          <% if $google_client_secrets_installed || ($google_client_secrets_web && session && session[:email]) %>
-            <li>
-              <a href="/auth/logout"><%= session[:email] %> (sign out)</a>
-            </li>
+          <% if $google_client_secrets_installed || $google_client_secrets_web %>
+            <% if session && session[:email] %>
+              <li>
+                <a href="/auth/logout"><%= session[:email] %> (sign out)</a>
+              </li>
+            <% else %>
+              <li>
+                <a href="/auth/authorize">Sign in</a>
+              </li>
+            <% end %>
           <% end %>
-          <% if $google_client_secrets_web && session && !session[:email] %>
-            <li>
-              <a href="/auth/authorize">Sign in</a>
-            </li>
-          <% end %>
+
           <li class="navbar-form" data-toggle="collapse" href="#page-instructions">
             <button type="button" class="btn btn-sm btn-muted" data-toggle="button">Instructions</button>
           </li>
         <% end %>
+
       </ul>
     </div>
   </div>

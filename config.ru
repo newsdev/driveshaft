@@ -26,15 +26,20 @@ $google_service_account = if service_path = ENV['GOOGLE_APICLIENT_SERVICEACCOUNT
   rescue; JSON.load(File.read(service_path)); end
 end
 
-$google_client_secrets_installed = if !$google_service_account && secrets_path = ENV['GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED']
+# Either an "installed" / "native application" OR "web application" client
+# JSON can be active at once. Each requires client-side OAuth2.
+$google_client_secrets_installed = if secrets_path = ENV['GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED']
   begin  Google::APIClient::ClientSecrets.load(File.expand_path(secrets_path));
   rescue; Google::APIClient::ClientSecrets.new(JSON.load(secrets_path)); end
 end
+$google_client_secrets_installed_cache = File.expand_path(ENV['GOOGLE_APICLIENT_FILESTORAGE'] || '~/.google_drive_oauth2.json')
 
 $google_client_secrets_web = if !$google_client_secrets_installed && secrets_path = ENV['GOOGLE_APICLIENT_CLIENTSECRETS_WEB']
   begin  Google::APIClient::ClientSecrets.load(File.expand_path(secrets_path));
   rescue; Google::APIClient::ClientSecrets.new(JSON.load(secrets_path)); end
 end
+
+$google_client_key = ENV['GOOGLE_APICLIENT_KEY']
 
 if ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['AWS_REGION']
   $s3           = Aws::S3::Client.new
@@ -44,6 +49,6 @@ end
 
 require './lib/driveshaft'
 require './lib/driveshaft/app'
-require './lib/driveshaft/auth' if $google_client_secrets_web
+require './lib/driveshaft/auth'
 
 run Driveshaft::App.new
