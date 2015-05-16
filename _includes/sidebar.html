@@ -5,13 +5,20 @@
       <img src="{{ site.baseurl }}{{ site.logo }}">
       {% endif %}
       <h1>{{ site.title }}</h1>
+      {% if site.tagline %}
+        <p class="tagline">{{ site.tagline }}</p>
+      {% endif %}
       {% if site.description %}
         <p class="description">{{ site.description }}</p>
       {% endif %}
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#">TK</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="#getting-started">Getting started</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="#authentication">Authentication</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="#s3">Publishing to S3</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="#heroku">Heroku</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="#reference">Reference</a>
 
       {% comment %}
         The code below dynamically generates a sidebar nav of pages with
@@ -30,10 +37,6 @@
       <a class="sidebar-nav-item" href="{{ site.github.repo }}/archive/v{{ site.version }}.zip">Download</a>
       <a class="sidebar-nav-item" href="{{ site.github.repo }}">GitHub project</a>
       <span class="sidebar-nav-item">Currently v{{ site.version }}</span>
-
-      {% if site.tagline %}
-        <p class="tagline">{{ site.tagline }}</p>
-      {% endif %}
     </nav>
   </div>
 </div>
