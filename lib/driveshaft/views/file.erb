@@ -82,7 +82,7 @@
             "<%%" wil become "<%".
           %>
           <div class="list-item history-item <%%= (etag == '<%= destination[:etag] %>') ? 'destination' : '' %> <%%= copy ? 'copy' : '' %>">
-            <a href="<%%= presigned_url %>" target="_blank">
+            <a href="<%%= presigned_url || url %>" target="_blank">
               <%%= display %>
             </a>
             <%% if (copy) { %>

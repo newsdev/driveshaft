@@ -65,7 +65,7 @@
 
         <p class="text-right">
           <%% destinations.forEach(function(destination) { %>
-            <a class="btn btn-sm btn-default" href="<%%= destination.presigned_url %>" target="_blank"><%%= destination.bucket %></a>
+            <a class="btn btn-sm btn-default" href="<%%= destination.presigned_url || destination.url %>" target="_blank"><%%= destination.bucket %></a>
           <%% }) %>
         </p>
       </div>

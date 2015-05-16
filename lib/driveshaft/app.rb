@@ -96,8 +96,7 @@ module Driveshaft
           bucket: bucket,
           key: object.key,
           url: "http://#{bucket}.s3.amazonaws.com/#{object.key}",
-          presigned_url: $s3_presigner.presigned_url(:get_object, bucket: bucket, key: key),
-          object: object,
+          presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil),
           etag: etag,
 
           timestamp: object.key.match(/(\d{8}-\d{6}).\w+$/)[1],
@@ -197,7 +196,7 @@ module Driveshaft
       end
 
     rescue Exception => e
-      flash[:error] = "Error while attempting to access file #{params[:file]}."
+      flash[:error] = "Error while attempting to access file #{params[:file]}. #{e.message}"
       puts e.message
       puts e.backtrace
       redirect back
@@ -238,7 +237,7 @@ module Driveshaft
           bucket: bucket,
           key: key,
           url: "http://#{bucket}.s3.amazonaws.com/#{key}",
-          presigned_url: $s3_presigner.presigned_url(:get_object, bucket: bucket, key: key)
+          presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
         }
       end
       destinations.compact!
@@ -272,7 +271,7 @@ module Driveshaft
 
       puts "File written to #{bucket}/#{key}"
     rescue Exception => e
-      flash[:error] = "Error writing to #{bucket}/#{key}"
+      flash[:error] = "Error writing to #{bucket}/#{key}. #{e.message}"
       puts e.message
       puts e.backtrace
       redirect back
