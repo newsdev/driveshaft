@@ -5,7 +5,7 @@ title: Home
 
 ## What is Driveshaft?
 
-Driveshaft is a [Sinatra](http://www.sinatrarb.com/) application built to turn Google Spreadsheets and Google Documents into JSON with the click of a button.
+> Driveshaft is a [Sinatra](http://www.sinatrarb.com/) application built to turn Google Spreadsheets and Google Documents into JSON with the click of a button.
 
 We use it at The New York Times to edit data for stories and interactives from within Google Drive files, letting multiple editors collaborate in a familiar environment.
 
@@ -18,7 +18,7 @@ Driveshaft was built to accomodate the following needs:
 * Made to deploy on Platform as a Service frameworks like Heroku
 * It should work as a standalone application for users, and expose an API for automated publishing
 
-<h2 id="getting-started">Getting Started locally</h2>
+<h2 id="getting-started">Getting started</h2>
 
 #### Dependencies
 
@@ -317,7 +317,7 @@ On S3, the canonical or latest version of a file is stored at the destination yo
 
 When you **publish** a file, the canonical version is updated, and a new timestamped version is created. When you **restore** a version, the canonical version is replaced with the version you specify.
 
-<h2 id="heroku">Getting Started on Heroku</h2>
+<h2 id="heroku">Heroku</h2>
 
 Driveshaft was built to deploy on PaaS (or "Platform as a Service") architecture like [Heroku](https://www.heroku.com/).
 

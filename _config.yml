@@ -9,7 +9,7 @@ relative_permalinks: true
 # Setup
 title:            Driveshaft
 tagline:          'Google Drive → JSON'
-description:      'Power your site with versioned JSON from Google Drive documents'
+# description:      'Power your site with versioned JSON from Google Drive documents'
 url:              https://newsdev.github.io/driveshaft
 baseurl:          /driveshaft/
 logo:             public/img/logo.png

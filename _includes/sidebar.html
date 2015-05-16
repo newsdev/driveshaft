@@ -4,7 +4,11 @@
       {% if site.logo %}
       <img src="{{ site.baseurl }}{{ site.logo }}">
       {% endif %}
-      <h1>{{ site.title }}</h1>
+      <h1>
+        <a href="{{ site.baseurl }}#getting-started">
+          {{ site.title }}
+        </a>
+      </h1>
       {% if site.tagline %}
         <p class="tagline">{{ site.tagline }}</p>
       {% endif %}
@@ -14,11 +18,10 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#getting-started">Getting started</a>
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#authentication">Authentication</a>
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#s3">Publishing to S3</a>
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#heroku">Heroku</a>
-      <a class="sidebar-nav-item sidebar-nav-hash" href="#reference">Reference</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="{{ site.baseurl }}#authentication">Authentication</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="{{ site.baseurl }}#s3">Publishing to S3</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="{{ site.baseurl }}#heroku">Heroku</a>
+      <a class="sidebar-nav-item sidebar-nav-hash" href="{{ site.baseurl }}#reference">Reference</a>
 
       {% comment %}
         The code below dynamically generates a sidebar nav of pages with
