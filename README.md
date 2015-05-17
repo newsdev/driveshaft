@@ -1,6 +1,6 @@
 # Driveshaft
 
-> TKTK
+> Driveshaft is a [Sinatra](http://www.sinatrarb.com/) application built to turn Google Spreadsheets and Google Documents into JSON with the click of a button.
 
 * [Quickstart](#quickstart)
 * [Documentation](#documentation)
