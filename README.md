@@ -3,7 +3,8 @@
 > TKTK
 
 * [Quickstart](#quickstart)
-* [Development](#development)
+* [Documentation](#documentation)
+* [Contribute](#contribute)
 
 ## Quickstart
 
