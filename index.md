@@ -325,6 +325,34 @@ Heroku has a great [Getting Started with Ruby on Heroku](https://devcenter.herok
 
 You'll have to set the same [environmental variables](#reference-environmental-variables) you set locally in order to access the Google Drive API and publish your files to S3.
 
+## Export Formats
+
+Driveshaft supports multiple ways of converting source data from a file into JSON, and ships with two.
+
+#### spreadsheet
+
+The default for Google Spreadsheets.
+
+Every Sheet in the spreadsheet becomes a top-level object in the output, keyed by sheet name. Each sheet's rows become an array of objects, with keys set from the first row of the spreadsheet.
+
+You can **hide** entire sheets or columns from the output by appending `:hide` to the sheet name, or column title in the first row.
+
+#### archieml
+
+The default for Google Documents.
+
+Uses the [ArchieML](http://archieml.org/) format for creating a JSON object from the text of a Google Document.
+
+Links in the document are converted to HTML `<a>` tags.
+
+### Adding formats
+
+Per-MIME Type defaults are set in `lib/driveshaft/exports.rb`.
+
+Additional formats can be added by creating additional files in the `lib/driveshaft/exports` directory, and exposing a class method on `Driveshaft::Exports` that accepts the Drive file and a Google APIClient for making API calls.
+
+It should return an object that can be passed directly to the AWS gems [S3::Object.put method](http://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Object.html#put-instance_method), letting you set custom permissions and metadata on the file if you wish.
+
 <h2 id="reference">Reference</h2>
 
 <h3 id="reference-api-endpoits">API endpoints</h3>
