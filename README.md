@@ -38,9 +38,9 @@ $ bundle install
 
 Driveshaft uses environmental variables for configuration. Set the following variables either at runtime on the commandline, or in your `/~.bash_profile`.
 
-Set ***at least one**, or several, of the following to authenticate against the Google API. You will need to set up a [Google Developers Project](https://console.developers.google.com/project) with the Drive API enabled, and create a set of credentials.
+Set **at least one**, or several, of the following to authenticate against the Google API. You will need to set up a [Google Developers Project](https://console.developers.google.com/project) with the Drive API enabled. Then create a set of credentials. Public API Keys, and any of the three OAuth2 mechanisms, are supported.
 
-Set either the API Key as the variable's value, or in the case of JSON certificates, set the variable to a path to the certificate, or the contents of the certificate.
+To use an API Key, set `GOOGLE_APICLIENT_KEY` to the key. For any type of OAuth certificate, set the variable to a path to the certificate file, or the contents of the certificate itself.
 
 ``` bash
 # Public API Key
