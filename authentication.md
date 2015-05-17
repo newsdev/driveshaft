@@ -7,26 +7,7 @@ sections: [
 ]
 ---
 
-For Driveshaft to have access to Google Drive documents, you must enable at least one type of authentication.
-
-These types range from a simple API Key to more complex sets of [OAuth2](http://oauth.net/2/) credentials. Whichever you choose, you must first have a Google account and create a "Project" in the Google Developers Console.
-
-To configure Driveshaft to use authentication, you'll need to set **environmental variables** on the system in which your app is running. Two common ways to do this are:
-
-1. Adding one or more variable name/value pairs at the beginning of the command that runs your server:
-
-    ``` bash
-    VAR_A="value a" VAR_B="value b" puma
-    ```
-
-2. "Exporting" the variables from your `~/.bash_profile` file.  Name/value pairs should be added one per line.
-
-    ``` bash
-    export VAR_A="value a"
-    export VAR_B="value b"
-    ```
-
-Restart your terminal window after editing this file for the variables to be available next time you run Driveshaft.
+For Driveshaft to have access to Google Drive documents, you must enable at least one type of authentication.  Whichever you choose, you must first have a Google account and create a "Project" in the Google Developers Console.
 
 <h2 id="create-project">Create a Project for Google API Access</h2>
 

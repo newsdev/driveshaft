@@ -70,6 +70,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "nyt-stymie", serif;
 }
 
+h2 {
+  margin-top: 3rem;
+}
+
 footer {
   border-top: 1px solid #eee;
   margin-top: 15px;
@@ -82,4 +86,14 @@ footer p {
 
 .content img {
   border: 2px solid #eee;
+}
+
+.highlight .info {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  font-size: .8rem;
+  line-height: 1.4;
+  background-color: #fcf8e3;
 }

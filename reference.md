@@ -3,7 +3,8 @@ layout: page
 title: Reference
 sections: [
   ['API Endpoints', 'api-endpoints'],
-  ['Environmental Variables', 'environmental-variables']
+  ['Environmental Variables', 'environmental-variables'],
+  ['Adding Formats', 'adding-formats']
 ]
 ---
 
@@ -61,19 +62,13 @@ The `versions` endpoint returns an array of objects in the following format:
 
 <h2 id="environmental-variables">Environmental Variables</h2>
 
-None of these is required, but enabling each section adds a category of functionality.
+Driveshaft relies on [environmental variables](http://en.wikipedia.org/wiki/Environment_variable) for configuration and authentication.  The process of setting variables differs from platform to platform.  (Instructions for [setting environmental variables in development](#env-in-development) are below.)
 
-#### Amazon Web Services (AWS)
+Most of the variables listed here are not required to run Driveshaft; each category of variable, however, enables additional functionality.
 
-Required to save and serve versioned files to S3. More information in Amazon's [documentation](http://docs.aws.amazon.com/IAM/latest/UserGuide/ManagingCredentials.html#Using_CreateAccessKey).
+### Google Authentication
 
-* `AWS_ACCESS_KEY_ID` The access key of your user or [IAM](http://aws.amazon.com/iam/) accont.
-* `AWS_SECRET_ACCESS_KEY` The secret key corresponding to your access key.
-* `AWS_REGION` The AWS region to use for S3 (e.g., `us-east-1`).
-
-#### Google Authentication
-
-Required to enable access to non-public files.
+One or more of the following four authentication keys is **required to run Driveshaft**:
 
 * Public API Key (server-side)
   * `GOOGLE_APICLIENT_KEY` A public API key.
@@ -81,17 +76,58 @@ Required to enable access to non-public files.
   * `GOOGLE_APICLIENT_SERVICEACCOUNT` A path to, or JSON representation of, a "service account" JSON key.
 * Installed application (client-side)
   * `GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED` A path to, or JSON representation of, a "native application" / "installed" client secret JSON.
-  * `GOOGLE_APICLIENT_FILESTORAGE` (defaults to `~/.google_drive_oauth2.json`)
+  * `GOOGLE_APICLIENT_FILESTORAGE` Optional. Defaults to `~/.google_drive_oauth2.json`
 * Web application (client-side)
   * `GOOGLE_APICLIENT_CLIENTSECRETS_WEB` A path to, or JSON representation of, a "web application" client secret JSON.
 
-#### Driveshaft Settings
+<div class="highlight">
+  <p class="info">Most users will choose only a single authentication strategy.  Some, however, may choose to use a combination of strategies.  For example, setting authentication variables for both service account and web application would allow all users to access files shared with the service account's email address as well as to their own files.</p>
+</div>
+
+### Amazon Web Services (AWS)
+
+**Required to save and serve versioned files to S3**. More information in Amazon's [documentation](http://docs.aws.amazon.com/IAM/latest/UserGuide/ManagingCredentials.html#Using_CreateAccessKey).
+
+* `AWS_ACCESS_KEY_ID` The access key of your user or [IAM](http://aws.amazon.com/iam/) accont.
+* `AWS_SECRET_ACCESS_KEY` The secret key corresponding to your access key.
+* `AWS_REGION` The AWS region to use for S3 (e.g., `us-east-1`).
+
+### Driveshaft Settings
 
 * `DRIVESHAFT_SETTINGS_AUTH_REQUIRED` (default: `false`) If `true`, then successful client-side authentication will be required to access any page. Useful for deploys on Heroku or other natively public platforms.
 * `DRIVESHAFT_SETTINGS_AUTH_DOMAIN` (default: none) If specified, allows client-side authentication for users within the specified domain only.
 * `DRIVESHAFT_SETTINGS_MAX_VERSIONS` If set, only this number of versions of a file will be kept. Older versions will be removed.
 
-Required to use a Google Spreadsheet to configure S3 destinations and have an index page listing of all available files. Using [this spreadsheet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view) as a base, create a spreadsheet with information of what documents should be included on your index page.
+The following variables are **required to list available files and their S3 destinations** on the Driveshaft index page.
 
+* `DRIVESHAFT_SETTINGS_INDEX_KEY` The Google Drive key of a Google Spreadsheet that lists files and their destinations.  The spreadsheet should use [this format](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view).
 * `DRIVESHAFT_SETTINGS_INDEX_DESTINATION` A url-formatted destination on S3 to which the configuration will be built (e.g., s3://BUCKET/PATH).
-* `DRIVESHAFT_SETTINGS_INDEX_KEY` The Google Drive key of this spreadsheet.
+
+<h3 id="env-in-development">Using Environmental Variables in Development</h3>
+
+There are two common methods for running Driveshaft with environmental variables on your your own computer:
+
+1. Adding one or more variable name/value pairs at the beginning of the command that runs the server:
+
+    ``` bash
+    VAR_A="value a" VAR_B="value b" puma
+    ```
+
+2. "Exporting" the variables from your `~/.bash_profile` file.  Name/value pairs should be added one per line.
+
+    ``` bash
+    export VAR_A="value a"
+    export VAR_B="value b"
+    ```
+
+Restart your terminal window after editing this file for the variables to be available next time you run Driveshaft.
+
+<h2 id="adding-formats">Adding Formats</h2>
+
+By default, Driveshaft can convert [spreadsheets and ArchieML]({{ site.basepath}}/#formats) (the default for Google Documents) to JSON, but you can add parsers for additional formats yourself.
+
+Per-MIME Type defaults are set in `lib/driveshaft/exports.rb`.
+
+Additional formats can be added by creating additional files in the `lib/driveshaft/exports` directory, and exposing a class method on `Driveshaft::Exports` that accepts the Drive file and a Google APIClient for making API calls.
+
+It should return an object that can be passed directly to the AWS gems [S3::Object.put method](http://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Object.html#put-instance_method), letting you set custom permissions and metadata on the file if you wish.
