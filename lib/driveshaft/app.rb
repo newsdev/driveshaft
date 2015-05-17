@@ -25,7 +25,7 @@ module Driveshaft
         :key => 'rack.session',
         :path => '/',
         :expire_after => 14400,
-        :secret => 'change_me'
+        :secret => $settings[:session_secret]
     use Rack::Flash, :sweep => true
 
     configure do
