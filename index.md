@@ -391,6 +391,8 @@ None of these is required, but enabling each section adds a category of function
 
 *Required to enable access to non-public files*
 
+* Public API Key (server-side)
+  * `GOOGLE_APICLIENT_KEY` A public API.
 * Service account (server-side)
   * `GOOGLE_APICLIENT_SERVICEACCOUNT` A path to, or JSON representation of, a "service account" JSON key.
 * Installed application (client-side)
