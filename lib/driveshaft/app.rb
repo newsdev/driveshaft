@@ -169,11 +169,9 @@ module Driveshaft
       # Our before filter, variable set up
       @key = params[:file]
 
-      drive ||= clients.first.discovered_api('drive', 'v2')
-
       clients.each_with_index do |client, idx|
         file_body = client.execute(
-          api_method: drive.files.get,
+          api_method: drive_api.files.get,
           parameters: {'fileId' => @key}
         ).body
         @file = JSON.load(file_body)
@@ -295,6 +293,14 @@ module Driveshaft
     rescue Exception => e
       puts "Error parsing S3 destination from '#{destination}'."
       nil
+    end
+
+    def drive_api
+      @drive_api ||= clients.first.discovered_api('drive', 'v2')
+    end
+
+    def plus_api
+      @plus_api ||= clients.first.discovered_api('plus', 'v1')
     end
 
   end

@@ -117,7 +117,7 @@ module Driveshaft
         # auth domain setting.
         session[:email] ||= (
           person = JSON.load(application_client.execute(
-            api_method: application_client.discovered_api('plus', 'v1').people.get,
+            api_method: plus_api.people.get,
             parameters: {'userId' => 'me'}
           ).body)
 
