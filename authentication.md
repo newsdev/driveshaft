@@ -41,13 +41,13 @@ To create your first set of keys, go back to the navigation on the left and clic
 
 ![Click on Credentials]({{ site.baseurl }}public/img/auth_06.png)
 
-There are several types of keys you can use, and you only have to enable one for Driveshaft to work.
-
 <h2 id="credentials">Types of API Credentials</h2>
+
+Google offers several types of keys for authentication; you only have to enable one for Driveshaft to work.
 
 ### 1. Public API Key
 
-An API Key is the easiest method. If this is your first time using OAuth, start with this. It will allow you to access public Google Drive files.
+Using a public API Key is the easiest method, and a good starting place if you're unfamiliar with OAuth to authentication or just experimenting with Driveshaft. It will allow Driveshaft to access public Google Drive files.
 
 On the **Credentials** page, click on **Create new Key**. Select **Server key**.
 
@@ -61,69 +61,80 @@ Click **Create**, and your new API Key will appear on the page.
 
 ![Click on Enable API]({{ site.baseurl }}public/img/auth_09.png)
 
-Using one of the methods above, set the environmental variable `GOOGLE_APICLIENT_KEY` to this string of characters. For example, you could run Driveshaft with the following:
+Set the environmental variable `GOOGLE_APICLIENT_KEY` to equal this string of characters. For example, you could run Driveshaft with the following:
 
 ``` bash
 GOOGLE_APICLIENT_KEY="AIzaSyC9HbVP3r2_ER0x8qZTW7DZnq1cnFNkpsI" puma
 ```
 
----
+[Click here]({{ site.basepath }}/reference#environmental-variables) for more information on Driveshaft and environmental variables.
 
-The last three options use OAuth2. This gives you more flexibility in the types of documents you can access. While the API Key above only lets you read public documents, these methods let you read private documents shared either with a special account for Driveshaft or the user.
+### 2. OAuth2
+
+Google offers three options for authenticating using [OAuth2](http://oauth.net/2/). Each will let Driveshaft access private as well as public documents, and give you more flexibility than the public API key authentication method provides.
 
 To create OAuth credentials, click on **Create new Client ID** on the **Credentials** page, and select one of the following.
 
-### 2. OAuth: Web application
+#### OAuth: Web application
 
-This type of credential will allow users to sign into Driveshaft, and authorize it to read their Google Drive files. Pick this if you want users to be able to convert any of their files.
+This type of credential will allow Driveshaft to read a given user's private Google Drive files.  The first time a user visits Driveshaft, he will be prompted automatically to "sign in" to Google and authorize Driveshaft to have this level of access.
 
-![Create a web application Client ID]({{ site.baseurl }}public/img/auth_10.png)
-
-You will need to add lines to **Authorized JavaScript origins** and **Authorized redirect URIs** for each hostname you plan to run Driveshaft on. If you're running Driveshaft locally on port `9292`, you should enter what's in the screenshot: `http://localhost:9292` and `http://localhost:9292/auth/callback` respectively. Then click **Create Client ID**.
-
-You can enter lines for multiple hostnames if you plan to run Driveshaft on, say, your own laptop and on a server with the url `http://nytdriveshaft.example.com`.
+After clicking on **Create new Client ID** on the **Credentials** page, select "Web application" as the application type.
 
 ![Enter authorized hostnames]({{ site.baseurl }}public/img/auth_10.png)
+
+You will need to add lines to **Authorized JavaScript origins** and **Authorized redirect URIs** for each hostname at which you plan to run Driveshaft, including your localhost. For example, if you're running Driveshaft locally on port `9292`, you should enter what's in the screenshot: `http://localhost:9292` and `http://localhost:9292/auth/callback` respectively. Then click **Create Client ID**.
+
+You can enter additional lines for each hostnames at which you plan to run Driveshaft. If you want to run Driveshaft on `http://nytdriveshaft.example.com` as well as locally, **Authorized JavaScript origins** might look like this
+
+    http://localhost:9292
+    http://nytdriveshaft.example.com
+
+and **Authorized redirect URIs** like this
+
+    http://localhost:9292/auth/callback
+    http://nytdriveshaft.example.com/auth/callback
 
 Finally, click on **Download JSON** to save the credentials to your computer.
 
 ![Click on Download JSON]({{ site.baseurl }}public/img/auth_11.png)
 
-To use them in Driveshaft, you can set the `GOOGLE_APICLIENT_CLIENTSECRETS_WEB` environmental variable to either the path on your filesystem where they are saved, or to crendential string itself.
+To use the credentials in Driveshaft, set the `GOOGLE_APICLIENT_CLIENTSECRETS_WEB` environmental variable to either the path on your filesystem where they are saved, or to crendential string itself.
 
 ``` bash
 GOOGLE_APICLIENT_CLIENTSECRETS_WEB="~/client_secret_102...json"
 GOOGLE_APICLIENT_CLIENTSECRETS_WEB="{\"web\":{\"auth_uri\":\"h..."
 ```
 
-Users will then be able to click on "sign in" in Driveshaft's navigation, and authorize Driveshaft.
+#### OAuth: Service account
 
-### 3. OAuth: Service account
+Instead of giving Driveshaft access to a particular user's account, you can configure it to read files that are explicitly shared with a **service account.**  Each service account has its own email address. If a user shares a file with that address, all Driveshaft users will be able to convert those files, regardless of whether their personal account has access to them.
 
-Service accounts are different in that instead of reading files from a user's account, they are authorized to read files that are explicitly shared with the service account.
+At The New York Times, we created a "shared folder" that we save documents into, and granted service account permission to read all documents within that folder. This removed the need for users to authenticate against their own accounts.
 
-Each service account gets its **own email address**. If you **share a file with that email**, and use the account's credentials in Driveshaft, all users will be able to convert those files, regardless of whether their personal account has access to them.
-
-At The New York Times, we use this by creating a "shared folder" that we save documents into, and we give the service account permission to read all documents within that folder. This prevents users from having to authenticate against their own accounts.
+After clicking on **Create new Client ID** on the **Credentials** page, select "Service account" as the application type.
 
 ![Create a service account Client ID]({{ site.baseurl }}public/img/auth_12.png)
 
 Be sure that **JSON Key** is selected for "Key type", then click **Create Client ID**.
 
-A `.json` file should automatically. This contains your service account credentials. Or, you can always click on **Generate new JSON key** to create a new set of credentials.
+A `.json` file should automatically be saved to your computer. This gile contains your service account credentials. (You can always click on **Generate new JSON key** to create a new set of credentials.)
 
 ![Click on Generate new JSON key]({{ site.baseurl }}public/img/auth_13.png)
 
-Just like the web application credentials, set the `GOOGLE_APICLIENT_SERVICEACCOUNT` environmental variable to their path on the filesystem, or the credential string itself.
+Set the `GOOGLE_APICLIENT_SERVICEACCOUNT` environmental variable to the path on the filesystem where it is saved, or the credential string itself.
 
 ``` bash
 GOOGLE_APICLIENT_SERVICEACCOUNT="~/NYT_Driveshaft-2142...json"
 GOOGLE_APICLIENT_SERVICEACCOUNT="{\"private_key_id\":\"2142..."
 ```
 
-### 4. OAuth: Installed application
+#### OAuth: Installed application
 
-This type of credential is made for applications running locally on a device, as opposed to users accessing an application running on a server. This is essentially what you're doing when you run Driveshaft locally on your computer.
+This type of credential is for applications running and being accessed locally on a device, rather than on a remote on server. This is essentially what you're doing when you run Driveshaft on your computer.
+
+After clicking on **Create new Client ID** on the **Credentials** page, select "Installed application" as the application type.
+
 
 Be sure to select **Other** for **Installed application type** (unless you come up with an awesome way to run Driveshaft on a PlayStation).
 
@@ -142,8 +153,10 @@ GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED="{\"installed\":{\"auth..."
 
 Users will be prompted to authorize their account against Driveshaft.
 
----
+### Using Multiple Authentication Strategies
 
 You can use any of the four authentication types simultaneously by setting multiple environmental variables (with the exception of "native" and "web" application client IDs, for which only one can be active at once).
 
-Once at least one authentication method is enabled, you should be able to view [this public spreadsheet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view#gid=0) within Driveshaft: [Driveshaft Test Spreadsheet](http://localhost:9292/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U). Try clicking on **Download spreadsheet** to try out the conversion.
+## Testing
+
+When you have enabled at least one authentication method, you should be able to view [this public spreadsheet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view#gid=0) within Driveshaft: [Driveshaft Test Spreadsheet](http://localhost:9292/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U). Try clicking on **Download spreadsheet** to try out the conversion.
