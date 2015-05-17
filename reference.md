@@ -9,18 +9,16 @@ sections: [
 
 <h2 id="api-endpoints">API Endpoints</h2>
 
-The API endpoints can be used in webhooks or bookmarkets to automate publishing.
+| method | endpoint | returns |
+| ------ | -------- | ------- |
+| GET | /:key/download | Converts the given file and returns the resulting JSON. |
+| GET | /:key/refresh/:destination | Converts the given file and saves it to the given destination on S3. Also saves a timestamped copy. |
+| GET | /:key/refresh | Converts the given file and saves it to all S3 destinations configured in the [index document](#TKTK). Also saves timestamped copies in all destinations. |
+| GET | /:key/restore/:destination | For a given timestamped destination, replaces the non-timestamped destination with the contents of the timestamped version. |
+| GET | /:key/versions/:destination.json | Returns a list of all timestamped versioned that have been generated for a given destination. |
 
-In the following endpoints:
-
-* `key` a Google Drive file ID
-* `format` the export format, by default either `spreadsheet` for spreadsheets or `archieml` for documents
-* `version` a version timestamp for a file in `YYYYMMDD-HHMMSS` format
-* `destination` a URL-formatted S3 destination. Examples:
-  * `s3://BUCKET/KEY`
-  * `http://BUCKET/KEY`
-  * `http://BUCKET.s3.amazonaws.com/KEY`
-  * `http://s3.amazonaws.com/BUCKET/KEY`
+> Endpoints that converts a file (`download` and the two `refresh` endpoints) can specify an optional `format` querystring parameter, corresponding to one of the [export formats](#TKTK).
+> Destinations can be specified in any URL-like format, such as `s3://BUCKET/KEY` or `http://BUCKET/KEY`.
 
 #### GET `/:key/download[?format=:format]`
 
