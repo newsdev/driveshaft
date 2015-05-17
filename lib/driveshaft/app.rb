@@ -138,6 +138,7 @@ module Driveshaft
       @destinations.each do |destination|
         refresh!(destination[:bucket], destination[:key]) unless @file['error']
       end
+      flash[:error] = "No destinations specified." if @destinations.length == 0
 
       if request.request_method == "POST"
         content_type :json
