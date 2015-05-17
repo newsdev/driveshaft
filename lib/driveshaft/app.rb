@@ -3,6 +3,7 @@ require 'date'
 
 require 'sinatra/base'
 require 'sinatra/content_for'
+require 'sinatra/multi_route'
 require 'rack-flash'
 
 require 'google/api_client'
@@ -15,6 +16,7 @@ require './lib/driveshaft/version'
 module Driveshaft
   class App < Sinatra::Base
     helpers Sinatra::ContentFor
+    register Sinatra::MultiRoute
 
     set :raise_errors, false
     set :protection, :except => :path_traversal
@@ -131,32 +133,57 @@ module Driveshaft
       export[:body]
     end
 
-    get '/:file/refresh' do
+    route :get, :post, '/:file/refresh.?:format?' do
       get_file!
       @destinations.each do |destination|
-        refresh!(destination[:bucket], destination[:key])
+        refresh!(destination[:bucket], destination[:key]) unless @file['error']
       end
 
-      redirect back
+      if request.request_method == "POST"
+        content_type :json
+        return {
+          status: flash[:error] ? 'error' : 'success',
+          error: flash[:error]
+        }.to_json
+      else
+        redirect back
+      end
     end
 
-    get '/:file/refresh/*' do
+    route :get, :post, '/:file/refresh/*' do
       get_file!
       bucket, key = parse_destination(params[:splat].first)
-      refresh!(bucket, key)
+      refresh!(bucket, key) unless @file['error']
 
-      redirect back
+      if request.request_method == "POST"
+        content_type :json
+        return {
+          status: flash[:error] ? 'error' : 'success',
+          error: flash[:error]
+        }.to_json
+      else
+        redirect back
+      end
     end
 
-    get '/:file/restore/*' do
+    route :get, :post, '/:file/restore/*' do
       get_file!
       bucket, key = parse_destination(params[:splat].first)
+
       timestamp = key.match(/(\d{8}-\d{6}).\w+$/)[1]
       key.gsub!(/-#{timestamp}/, '')
 
-      restore!(bucket, key, timestamp)
+      restore!(bucket, key, timestamp) unless @file['error']
 
-      redirect back
+      if request.request_method == "POST"
+        content_type :json
+        return {
+          status: flash[:error] ? 'error' : 'success',
+          error: flash[:error]
+        }.to_json
+      else
+        redirect back
+      end
     end
 
     private
@@ -166,38 +193,42 @@ module Driveshaft
     end
 
     def get_file!
-      # Our before filter, variable set up
-      @key = params[:file]
+      begin
+        # Our before filter, variable set up
+        @key = params[:file]
 
-      clients.each_with_index do |client, idx|
-        file_body = client.execute(
-          api_method: drive_api.files.get,
-          parameters: {'fileId' => @key}
-        ).body
-        @file = JSON.load(file_body)
-        break unless @file['error']
+        clients.each_with_index do |client, idx|
+          file_body = client.execute(
+            api_method: drive_api.files.get,
+            parameters: {'fileId' => @key}
+          ).body
+          @file = JSON.load(file_body)
+          break unless @file['error']
+        end
+
+        file_config = get_settings[@key] || {}
+
+        # Allow overriding default file config with querystring parameters
+        default_export_format = file_config['format'] || Driveshaft::Exports.default_format_for(@file)
+
+        @destinations = get_destinations(params) || file_config['destinations'] || []
+        @export_format = params[:format] || default_export_format
+
+        if @file["error"]
+          flash[:error] = @file['error']['message']
+        elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
+          flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:index][:key]}/edit#gid=0'>Update or add</a> this file's configuration to make these settings persist."
+        end
+
+      rescue Exception => e
+        flash[:error] = "Error while attempting to access file #{params[:file]}. #{e.message}"
+        puts e.message
+        puts e.backtrace
       end
 
-      file_config = get_settings[@key] || {}
-
-      # Allow overriding default file config with querystring parameters
-      default_export_format = file_config['format'] || Driveshaft::Exports.default_format_for(@file)
-
-      @destinations = get_destinations(params) || file_config['destinations'] || []
-      @export_format = params[:format] || default_export_format
-
-      if @file["error"]
-        flash[:error] = @file['error']['message']
+      if (@file["error"] || flash[:error]) && request.request_method != "POST"
         redirect back
-      elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
-        flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:index][:key]}/edit#gid=0'>Update or add</a> this file's configuration to make these settings persist."
       end
-
-    rescue Exception => e
-      flash[:error] = "Error while attempting to access file #{params[:file]}. #{e.message}"
-      puts e.message
-      puts e.backtrace
-      redirect back
     end
 
     # Can we make this work for any user's individual drive folder?
@@ -249,11 +280,9 @@ module Driveshaft
         export = Driveshaft::Exports.export(@file, @export_format, *clients)
         unless export[:body]
           flash[:error] = "No output found."
-          redirect back
         end
       rescue Exception => e
         flash[:error] = "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
-        redirect back
       end
 
       puts "Writing json file to #{bucket}/#{key}"
@@ -272,7 +301,6 @@ module Driveshaft
       flash[:error] = "Error writing to #{bucket}/#{key}. #{e.message}"
       puts e.message
       puts e.backtrace
-      redirect back
     end
 
     def restore!(bucket, key, timestamp)
