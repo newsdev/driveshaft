@@ -130,10 +130,14 @@ module Driveshaft
 
     route :get, :post, '/:file/refresh.?:format?' do
       get_file!
-      @destinations.each do |destination|
-        refresh!(destination[:bucket], destination[:key]) unless @file['error']
+
+      if !@destinations || @destinations.length == 0
+        flash[:error] = "No destinations specified."
+      else
+        @destinations.each do |destination|
+          refresh!(destination[:bucket], destination[:key]) unless @file['error']
+        end
       end
-      flash[:error] = "No destinations specified." if @destinations.length == 0
 
       if request.request_method == "POST"
         content_type :json
