@@ -18,7 +18,8 @@ $settings = {
     required: ENV['DRIVESHAFT_SETTINGS_AUTH_REQUIRED'].to_s == 'true',
     domain: ENV['DRIVESHAFT_SETTINGS_AUTH_DOMAIN']
   },
-  asset_host: (ENV['DRIVESHAFT_SETTINGS_ASSET_HOST'] || '/assets').sub(/\/$/, '')
+  asset_host: (ENV['DRIVESHAFT_SETTINGS_ASSET_HOST'] || '/assets').sub(/\/$/, ''),
+  max_versions: ENV['DRIVESHAFT_SETTINGS_MAX_VERSIONS'].to_i
 }
 
 $google_service_account = if service_path = ENV['GOOGLE_APICLIENT_SERVICEACCOUNT']

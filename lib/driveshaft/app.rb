@@ -83,12 +83,7 @@ module Driveshaft
       get_file!
       bucket, key = parse_destination(params[:splat].first)
 
-      directory = key.sub(/(?<!\/)([^\/]+$)/, '')
-      basename  = File.basename(key).sub(/\.\w+$/, '')
-
-      objects = $s3.list_objects(bucket: bucket, prefix: directory, delimiter: '/').contents
-      objects.select! { |object| object.key.match(/(?:^|\/)#{basename}-\d{8}-\d{6}\.\w+$/) }
-      objects.reverse!
+      objects = get_versions(bucket, key).reverse
 
       etags = {}
       versions = []
@@ -274,6 +269,15 @@ module Driveshaft
       destinations if destinations.length > 0
     end
 
+    def get_versions(bucket, key)
+      directory = key.sub(/(?<!\/)([^\/]+$)/, '')
+      basename  = File.basename(key).sub(/\.\w+$/, '')
+
+      objects = $s3.list_objects(bucket: bucket, prefix: directory, delimiter: '/').contents
+      objects.select! { |object| object.key.match(/(?:^|\/)#{basename}-\d{8}-\d{6}\.\w+$/) }
+      objects
+    end
+
     def refresh!(bucket, key)
       puts "Generating json for file '#{@file['title']}'"
 
@@ -295,6 +299,14 @@ module Driveshaft
       put_options = {acl: 'public-read'}.merge(export)
       objects.each do |object|
         object.put(put_options)
+      end
+
+      # Prune stored versions to a max number
+      if $settings[:max_versions] > 0
+        expired = get_versions(bucket, key).reverse[$settings[:max_versions]..-1]
+        expired.each do |version|
+          $s3_resources.bucket(bucket).object(version.key).delete
+        end
       end
 
       puts "File written to #{bucket}/#{key}"
