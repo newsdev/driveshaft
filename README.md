@@ -12,7 +12,7 @@ For the full user guide, please refer to the [documentation](https://newsdev.git
 
 ### Dependencies
 
-Be sure to have the following dependencies installed:
+Be sure to have the following system dependencies installed:
 
 ``` bash
 # Git, Ruby, Node
@@ -23,6 +23,15 @@ $ npm install -g bower
 
 # Bundler
 $ gem install bundler
+```
+
+### Clone the repository and resolve app dependencies
+
+``` bash
+$ git clone git@github.com:newsdev/driveshaft.git
+$ cd driveshaft
+$ bower install
+$ bundle install
 ```
 
 ### Environmental Variables
@@ -72,11 +81,6 @@ DRIVESHAFT_SETTINGS_INDEX_KEY="DRIVE_KEY"
 ### Run the app locally
 
 ``` bash
-$ git clone git@github.com:newsdev/driveshaft.git
-$ cd driveshaft
-$ bower install
-$ bundle install
-
 $ puma
 ```
 
