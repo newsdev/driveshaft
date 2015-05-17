@@ -307,7 +307,7 @@ module Driveshaft
 
       # Prune stored versions to a max number
       if $settings[:max_versions] > 0
-        expired = get_versions(bucket, key).reverse[$settings[:max_versions]..-1]
+        expired = get_versions(bucket, key).reverse[$settings[:max_versions]..-1] || []
         expired.each do |version|
           $s3_resources.bucket(bucket).object(version.key).delete
         end
