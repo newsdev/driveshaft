@@ -11,44 +11,50 @@ sections: [
 
 | method | endpoint | returns |
 | ------ | -------- | ------- |
-| GET | /:key/download | Converts the given file and returns the resulting JSON. |
-| GET | /:key/refresh/:destination | Converts the given file and saves it to the given destination on S3. Also saves a timestamped copy. |
-| GET | /:key/refresh | Converts the given file and saves it to all S3 destinations configured in the [index document](#TKTK). Also saves timestamped copies in all destinations. |
-| GET | /:key/restore/:destination | For a given timestamped destination, replaces the non-timestamped destination with the contents of the timestamped version. |
-| GET | /:key/versions/:destination.json | Returns a list of all timestamped versioned that have been generated for a given destination. |
+| GET | `/:key/download` | Converts the given file and returns the resulting JSON. |
+| POST | `/:key/refresh/:destination` | Converts the given file and saves it to the given destination on S3. Also saves a timestamped copy. |
+| POST | `/:key/refresh` | Converts the given file and saves it to all S3 destinations configured in the [index document](#TKTK). Also saves timestamped copies in all destinations. |
+| POST | `/:key/restore/:destination` | For a given timestamped destination, replaces the non-timestamped destination with the contents of the timestamped version. |
+| GET | `/:key/versions/:destination` | Returns a list of all timestamped versioned that have been generated for a given destination. |
 
-> Endpoints that converts a file (`download` and the two `refresh` endpoints) can specify an optional `format` querystring parameter, corresponding to one of the [export formats](#TKTK).
-> Destinations can be specified in any URL-like format, such as `s3://BUCKET/KEY` or `http://BUCKET/KEY`.
+#### Querystring options
 
-#### GET `/:key/download[?format=:format]`
+The `download` and `refresh` endpoints accept an optional `format` querystring parameter, corresponding to one of the [export formats](#TKTK).
 
-Returns the file converted into the requested format.
+Destinations can be specified in any URL-like format, such as `s3://BUCKET/KEY` or `http://BUCKET/KEY`.
 
-#### GET `/:key/refresh[/:destination]`
+#### Responses
 
-Publishes the file to either all endpoints configured for a given key, or just to a specific destination.
+The three `POST` endpoints will return a JSON-formatted response with the status of the request along with any error messages.
 
-#### GET `/:key/restore/:version`
+``` bash
+$ curl -XPOST /:key/refresh
+{"status": "success", "error": null}
 
-Restores the published JSON to the specified version.
+$ curl -XPOST /:key/refresh/:destination
+{"status": "success", "error": null}
 
-#### GET `/:key/versions/:destination.json`
+$ curl -XPOST /:key/restore/:destination
+{"status": "error", "error": "File not found: ******"}
+```
 
-An array of all published versions of this file.
+All endpoints also respond to `GET` requests, for use with bookmarklets.
 
-Example response:
+The `versions` endpoint returns an array of objects in the following format:
 
-``` json
+``` ruby
 [
   {
     "bucket": "assets.nytimes.com",
     "key": "spreadsheet.json",
     "url": "[published url]",
-    "presigned_url": "[published url]",
+    "presigned_url": "[presigned published url]",
     "etag": "30be746b74321851db5f9050e7e569cc",
     "timestamp": "20150514-232304",
-    "copy": false,
-    "display": "Thu May 14 04:23 PM PDT"
+    "display": "Thu May 14 04:23 PM PDT",
+
+    # Whether this file is a dup of an earlier version
+    "copy": false
   }
 ]
 ```
@@ -59,7 +65,7 @@ None of these is required, but enabling each section adds a category of function
 
 #### Amazon Web Services (AWS)
 
-*Required to save and serve versioned files to S3*. More information in Amazon's [documentation](http://docs.aws.amazon.com/IAM/latest/UserGuide/ManagingCredentials.html#Using_CreateAccessKey).
+Required to save and serve versioned files to S3. More information in Amazon's [documentation](http://docs.aws.amazon.com/IAM/latest/UserGuide/ManagingCredentials.html#Using_CreateAccessKey).
 
 * `AWS_ACCESS_KEY_ID` The access key of your user or [IAM](http://aws.amazon.com/iam/) accont.
 * `AWS_SECRET_ACCESS_KEY` The secret key corresponding to your access key.
@@ -67,10 +73,10 @@ None of these is required, but enabling each section adds a category of function
 
 #### Google Authentication
 
-*Required to enable access to non-public files*
+Required to enable access to non-public files.
 
 * Public API Key (server-side)
-  * `GOOGLE_APICLIENT_KEY` A public API.
+  * `GOOGLE_APICLIENT_KEY` A public API key.
 * Service account (server-side)
   * `GOOGLE_APICLIENT_SERVICEACCOUNT` A path to, or JSON representation of, a "service account" JSON key.
 * Installed application (client-side)
@@ -84,7 +90,7 @@ None of these is required, but enabling each section adds a category of function
 * `DRIVESHAFT_SETTINGS_AUTH_REQUIRED` (default: `false`) If `true`, then successful client-side authentication will be required to access any page. Useful for deploys on Heroku or other natively public platforms.
 * `DRIVESHAFT_SETTINGS_AUTH_DOMAIN` (default: none) If specified, allows client-side authentication for users within the specified domain only.
 
-*Required to use a Google Spreadsheet to configure S3 destinations and have an index page listing of all available files.* Using [this spreadsheet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view) as a base, create a spreadsheet with information of what documents should be included on your index page.
+Required to use a Google Spreadsheet to configure S3 destinations and have an index page listing of all available files. Using [this spreadsheet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view) as a base, create a spreadsheet with information of what documents should be included on your index page.
 
 * `DRIVESHAFT_SETTINGS_INDEX_DESTINATION` A url-formatted destination on S3 to which the configuration will be built (e.g., s3://BUCKET/PATH).
 * `DRIVESHAFT_SETTINGS_INDEX_KEY` The Google Drive key of this spreadsheet.
