@@ -10,9 +10,13 @@ html {
   display: block;
   margin: 0 auto;
 }
-.sidebar-nav-item {
-  line-height: 30px;
+.sidebar-subnav-item {
+  font-size: 0.86em;
+  margin-left: 15px;
 }
+/*.sidebar-nav-item {
+  line-height: 30px;
+}*/
 .sidebar-nav-hash {
   position: relative;
   padding-left: 20px;
