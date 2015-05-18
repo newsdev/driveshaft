@@ -226,7 +226,7 @@ module Driveshaft
         puts e.backtrace
       end
 
-      if (!@file || @file["error"] || flash[:error]) && request.request_method != "POST"
+      if (!@file || @file["error"]) && request.request_method != "POST"
         redirect back
       end
     end
