@@ -14,13 +14,13 @@ sections: [
 | ------ | -------- | ------- |
 | GET | `/:key/download` | Converts the given file and returns the resulting JSON. |
 | POST | `/:key/refresh/:destination` | Converts the given file and saves it to the given destination on S3. Also saves a timestamped copy. |
-| POST | `/:key/refresh` | Converts the given file and saves it to all S3 destinations configured in the [index document](#TKTK). Also saves timestamped copies in all destinations. |
+| POST | `/:key/refresh` | Converts the given file and saves it to all S3 destinations configured in the [index document](#index-settings). Also saves timestamped copies in all destinations. |
 | POST | `/:key/restore/:destination` | For a given timestamped destination, replaces the non-timestamped destination with the contents of the timestamped version. |
 | GET | `/:key/versions/:destination` | Returns a list of all timestamped versioned that have been generated for a given destination. |
 
 #### Querystring options
 
-The `download` and `refresh` endpoints accept an optional `format` querystring parameter, corresponding to one of the [export formats](#TKTK).
+The `download` and `refresh` endpoints accept an optional `format` querystring parameter, corresponding to one of the [export formats]({{ site.baseurl }}#formats).
 
 Destinations can be specified in any URL-like format, such as `s3://BUCKET/KEY` or `http://BUCKET/KEY`.
 
@@ -98,6 +98,7 @@ One or more of the following four authentication keys is **required to run Drive
 * `DRIVESHAFT_SETTINGS_AUTH_DOMAIN` (default: none) If specified, allows client-side authentication for users within the specified domain only.
 * `DRIVESHAFT_SETTINGS_MAX_VERSIONS` If set, only this number of versions of a file will be kept. Older versions will be removed.
 
+<span id="index-settings"></span>
 The following variables are **required to list available files and their S3 destinations** on the Driveshaft index page.
 
 * `DRIVESHAFT_SETTINGS_INDEX_KEY` The Google Drive key of a Google Spreadsheet that lists files and their destinations.  The spreadsheet should use [this format](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/view).
