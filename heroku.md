@@ -11,4 +11,6 @@ You'll have to set the same [environmental variables]({{ site.basepath }}/refere
 
 In addition, you will need to set a config variable to use a custom [buildpack](https://devcenter.heroku.com/articles/buildpacks). This will make Heroku run `bundle install` on deploy.
 
-`heroku config:add BUILDPACK_URL=https://github.com/ddollar/heroku-buildpack-multi`
+``` bash
+heroku config:add BUILDPACK_URL=https://github.com/ddollar/heroku-buildpack-multi
+```
