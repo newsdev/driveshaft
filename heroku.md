@@ -1,9 +1,6 @@
 ---
 layout: page
 title: Driveshaft on Heroku
-sections: [
-  ['Dependencies', 'dependencies']
-]
 ---
 
 Driveshaft was built to deploy on PaaS (or "Platform as a Service") architecture like [Heroku](https://www.heroku.com/).

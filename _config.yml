@@ -17,6 +17,7 @@ baseurl:          /driveshaft/
 basepath:         /driveshaft
 page_order:
   - index.md
+  - tour.md
   - authentication.md
   - s3.md
   - heroku.md
