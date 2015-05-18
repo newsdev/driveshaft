@@ -23,7 +23,7 @@
     </div>
     <div class="col-sm-5">
       <h5>Destinations on S3 (optional)</h5>
-      <input name="destinations" class="form-control input-sm" type="text" placeholder="e.g., s3://<%= File.dirname($settings[:index][:destination] || 'BUCKET/KEY') %>/output.json">
+      <input name="destinations" class="form-control input-sm" type="text" placeholder="e.g., s3://<%= File.dirname(($settings[:index][:destination] || 'BUCKET/KEY').sub(/^\w+:\/\//, '')) %>/output.json">
     </div>
     <div class="col-sm-2">
       <h5>&nbsp;</h5>
