@@ -15,16 +15,18 @@
 
 <br>
 
-<h5>Look up a file</h5>
 <form class="form-horizontal" id="lookup-by-url" data-action="false">
   <div class="form-group">
     <div class="col-sm-5">
+      <h5>Look up a file</h5>
       <input name="url" pattern=".*?(?:/d/([\w-_]+))|(?:([\w-_]+)).*?" class="form-control input-sm" type="text" placeholder="URL or ID of Google Drive file" required>
     </div>
     <div class="col-sm-5">
-      <input name="destinations" class="form-control input-sm" type="text" placeholder="List of destinations on S3 (optional)">
+      <h5>Destinations on S3 (optional)</h5>
+      <input name="destinations" class="form-control input-sm" type="text" placeholder="e.g., s3://<%= File.dirname($settings[:index][:destination] || 'BUCKET/KEY') %>/output.json">
     </div>
     <div class="col-sm-2">
+      <h5>&nbsp;</h5>
       <input class="btn btn-primary btn-sm btn-block" type="submit" value="Submit">
     </div>
   </div>
