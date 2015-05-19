@@ -73,7 +73,7 @@ test: document
 
 ArchieML is based on **key-value pairs**, but [supports](https://archieml.org/) more complex data structures as well.
 
-## Getting started
+<h2 id="getting-started">Getting started <small>in 3 steps</small></h2>
 
 The instructions below will help you get Driveshaft up and running on your computer.  If you'd prefer to test out Driveshaft by installing it first on Heroku, you'll still need to go through the first couple of steps.  We'll let you know when you can  can skip ahead to the instructions for [deploying on Heroku]({{ site.basepath }}/heroku).
 
@@ -129,8 +129,8 @@ By default, puma will run Driveshaft on [`http://localhost:9292`](http://localho
 
 ### Step 3: Enable Driveshaft to access other services
 
-* [Google Drive API]({{ site.basepath }}/authentication/) (so Driveshaft can access your files)
-* [Amazon S3]({{ site.basepath }}/s3/) file storage service (to publish JSON to the internet and keep multiple versions around)
+* [Google Drive API]({{ site.basepath }}/authentication/) so Driveshaft can access your files
+* [Amazon S3]({{ site.basepath }}/s3/) file storage service to publish JSON to the internet and keep multiple versions around
 
 ## Tour
 
