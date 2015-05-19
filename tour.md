@@ -9,16 +9,18 @@ sections: [
 
 You can try out our [demo deploy](https://gentle-caverns-1193.herokuapp.com/index) of Driveshaft on Heroku.
 
-<h2 id="index-page">Index Page</h2>
-
-The **index page** of Driveshaft contains two main components.  At the top of the page, users can manually enter the URL or ID of a Google Document they'd like to convert to JSON.  If they supply an optional S3 destination, they will be able to publish the JSON as well as view it on the subsequent **file page.**
-
-TK.
-
 <div class="highlight">
-  <p class="info">Driveshaft uses <strong>Adcom</strong>, an open source set of styles and jQuery plugins created by Michael Strickland for our admin sites at the New York Times.  For more information, check out the <a href="https://newsdev.github.io/adcom/">documentation</a> and the <a href="https://github.com/newsdev/adcom">code</a>.</p>
+  <p class="info">Driveshaft uses <strong>Adcom</strong>, an open source set of styles and jQuery plugins created for admin sites at the New York Times.  For more information, check out the <a href="https://newsdev.github.io/adcom/">documentation</a> and the <a href="https://github.com/newsdev/adcom">code</a>.</p>
 </div>
 
-<h2 id="file-page">File Page</h2>
+## [Index Page](https://gentle-caverns-1193.herokuapp.com/index)
 
-TK.
+There are two sections:
+
+* **Convert a file by url**. Enter a URL or Drive ID to go to a convert page for that file. Optionally list one or more S3 destinations you would like to publish to.
+* **Curated list of Drive Files**. Powered by a Google Spreadsheet you can [specify in the settings](#TKTK).
+
+## [File Page](https://gentle-caverns-1193.herokuapp.com/1tnOVclrcAEVaDSlWPHgIZ7l9rSZMB6OideHeYf3QFpk)
+
+* **Edit, Convert, Download**. The top of the file page links to the source file, and lets you convert + download it using any of the available formats.
+* **Publish to S3**. Each S3 destination [configured](#TKTK) is listed and can be pubished to. There's a list of previous versions, each of which can be viewed or reverted to.
