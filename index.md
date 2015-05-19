@@ -145,7 +145,7 @@ You can try out our [demo deploy](https://gentle-caverns-1193.herokuapp.com/inde
 There are two sections:
 
 * **Convert a file by url**. Enter a URL or Drive ID to go to a convert page for that file. Optionally list one or more S3 destinations you would like to publish to.
-* **Curated list of Drive Files**. Powered by a Google Spreadsheet you can [specify in the settings](#TKTK).
+* **Curated list of Drive Files**. Powered by a Google Spreadsheet you can [specify in the settings]({{ site.basepath }}/reference#index-settings).
 
 ### [File Page](https://gentle-caverns-1193.herokuapp.com/1tnOVclrcAEVaDSlWPHgIZ7l9rSZMB6OideHeYf3QFpk)
 
