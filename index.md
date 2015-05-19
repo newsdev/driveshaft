@@ -4,8 +4,8 @@ title: Home
 sections: [
   ['Goals', 'goals'],
   ['Supported Formats', 'formats'],
-  ['Tour', 'tour'],
-  ['Getting Started', 'getting-started']
+  ['Getting Started', 'getting-started'],
+  ['Tour', 'tour']
 ]
 ---
 
