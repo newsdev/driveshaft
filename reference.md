@@ -8,7 +8,7 @@ sections: [
 ]
 ---
 
-<h2 id="api-endpoints">API Endpoints</h2>
+## API Endpoints
 
 | method | endpoint | returns |
 | ------ | -------- | ------- |
@@ -60,7 +60,7 @@ The `versions` endpoint returns an array of objects in the following format:
 ]
 ```
 
-<h2 id="environmental-variables">Environmental Variables</h2>
+## Environmental Variables
 
 Driveshaft relies on [environmental variables](http://en.wikipedia.org/wiki/Environment_variable) for configuration and authentication.  The process of setting variables differs from platform to platform.  (Instructions for [setting environmental variables in development](#env-in-development) are below.)
 
@@ -123,7 +123,7 @@ There are two common methods for running Driveshaft with environmental variables
 
 Restart your terminal window after editing this file for the variables to be available next time you run Driveshaft.
 
-<h2 id="adding-formats">Adding Formats</h2>
+## Adding Formats
 
 By default, Driveshaft can convert [spreadsheets and ArchieML]({{ site.basepath}}/#formats) (the default for Google Documents) to JSON, but you can add parsers for additional formats yourself.
 

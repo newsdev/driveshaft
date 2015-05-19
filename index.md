@@ -4,6 +4,7 @@ title: Home
 sections: [
   ['Goals', 'goals'],
   ['Supported Formats', 'formats'],
+  ['Tour', 'tour'],
   ['Getting Started', 'getting-started']
 ]
 ---
@@ -12,16 +13,16 @@ sections: [
 
 > Driveshaft is a [Sinatra](http://www.sinatrarb.com/) application built to turn Google Spreadsheets and Google Documents into JSON with the click of a button.
 
-We use it at The New York Times to edit data for stories and interactives from within Google Drive files, letting multiple editors collaborate in a familiar environment.
+We use it at The New York Times to published structured data for interactives, widgets on NYTimes.com and configuring internal settings. Using Google Drive files lets multiple editors collaborate in a familiar environment.
 
-<h2 id="goals">Goals</h2>
+## Goals
 
-* Publishing should be a one-step process
-* All published JSON versions should be kept and be restorable
-* Every file should be publishable to as many "destinations" as desired: to both staging and production environments, for example
-* Google Drive authentication should be invisible when possible (within a firewall) but explicit when necessary (let users authenticate with their own accounts)
-* It should work as a standalone application for users, and expose an API for automated publishing
-* Driveshaft should be deployable on Platform as a Service frameworks like Heroku
+* **Publish to S3** in one step
+* **Version history**, ability to restore older version
+* Publish any file to multiple destinations / **environments**
+* **Google Drive authentication** should be invisible when possible (within a firewall) but explicit when necessary (let users authenticate with their own accounts)
+* A **website** for humans, and an **API** for automated publishing
+* **Heroku** (and other Platform as a Service frameworks) deployable
 
 <h2 id="formats">Supported Formats</h2>
 
@@ -31,11 +32,24 @@ Driveshaft can convert documents in multiple data formats into JSON.  It ships w
 
 The default for Google Spreadsheets.
 
-Every Sheet in the spreadsheet becomes a top-level object in the output, keyed by sheet name. Each sheet's rows become an array of objects, with keys set from the first row of the spreadsheet.
+Sheets (or tabs) becomes a top-level object in the output, keyed by sheet name. Each sheet's rows become an array of objects. Column headers come from the first row of the spreadsheet.
 
 You can **hide** entire sheets or columns from the output by appending `:hide` to the sheet name, or column title in the first row.
 
-<!-- TODO: example document? -->
+###### Example: Spreadsheet → JSON
+
+![Spreadsheet example]({{ site.baseurl }}public/img/format_spreadsheet.png)
+
+``` json
+{
+  "people": [
+    { "name": "Amanda", "age": "26" },
+    { "name": "Tessa", "age": "30" }
+  ]
+}
+```
+
+The **notes** field and **other** tab aren't included in the output.
 
 ### ArchieML
 
@@ -43,13 +57,27 @@ The default for Google Documents.
 
 Uses the [ArchieML](http://archieml.org/) format for creating a JSON object from the text of a Google Document.
 
-Links in the document are converted to HTML `<a>` tags.
+###### Example: Document → JSON
 
-<h2 id="getting-started">Getting started</h2>
+``` yaml
+key: value
+test: document
+```
+
+``` json
+{
+  "key": "value",
+  "test": "document"
+}
+```
+
+ArchieML is based on **key-value pairs**, but [supports](https://archieml.org/) more complex data structures as well.
+
+## Getting started
 
 The instructions below will help you get Driveshaft up and running on your computer.  If you'd prefer to test out Driveshaft by installing it first on Heroku, you'll still need to go through the first couple of steps.  We'll let you know when you can  can skip ahead to the instructions for [deploying on Heroku]({{ site.basepath }}/heroku).
 
-### Dependencies
+### Step 1: System Dependencies
 
 To begin, you'll need to have a few programs installed on your computer.
 
@@ -78,9 +106,9 @@ To begin, you'll need to have a few programs installed on your computer.
 
     gem install bundler
 
-### Set Up and Run Driveshaft
+### Step 2: Download and Run Driveshaft
 
-1. Clone the Driveshaft repository using git, and move into its directory.
+1. Clone the Driveshaft repository using git, and move into its directory. (If you don't have git, you can [download]({{ site.github.repo }}/archive/v{{ site.version }}.zip) driveshaft instead.)
 
         git clone git@github.com:newsdev/driveshaft.git
         cd driveshaft
@@ -99,8 +127,27 @@ To begin, you'll need to have a few programs installed on your computer.
 
 By default, puma will run Driveshaft on [`http://localhost:9292`](http://localhost:9292).
 
-Before you can use the app, however, you will need to [enable Driveshaft to access Google Drive]({{ site.basepath }}/authentication).
+### Step 3: Enable Driveshaft to access other services
 
+* [Google Drive API]({{ site.basepath }}/authentication/) (so Driveshaft can access your files)
+* [Amazon S3]({{ site.basepath }}/s3/) file storage service (to publish JSON to the internet and keep multiple versions around)
 
+## Tour
 
+You can try out our [demo deploy](https://gentle-caverns-1193.herokuapp.com/index) of Driveshaft on Heroku.
 
+<div class="highlight">
+  <p class="info">Driveshaft uses <strong>Adcom</strong>, an open source set of styles and jQuery plugins created for admin sites at the New York Times.  For more information, check out the <a href="https://newsdev.github.io/adcom/">documentation</a> and the <a href="https://github.com/newsdev/adcom">code</a>.</p>
+</div>
+
+### [Index Page](https://gentle-caverns-1193.herokuapp.com/index)
+
+There are two sections:
+
+* **Convert a file by url**. Enter a URL or Drive ID to go to a convert page for that file. Optionally list one or more S3 destinations you would like to publish to.
+* **Curated list of Drive Files**. Powered by a Google Spreadsheet you can [specify in the settings](#TKTK).
+
+### [File Page](https://gentle-caverns-1193.herokuapp.com/1tnOVclrcAEVaDSlWPHgIZ7l9rSZMB6OideHeYf3QFpk)
+
+* **Edit, Convert, Download**. The top of the file page links to the source file, and lets you convert + download it using any of the available formats.
+* **Publish to S3**. Each S3 destination [configured](#TKTK) is listed and can be pubished to. There's a list of previous versions, each of which can be viewed or reverted to.
