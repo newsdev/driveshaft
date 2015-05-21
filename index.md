@@ -34,8 +34,6 @@ The default for Google Spreadsheets.
 
 Sheets (or tabs) becomes a top-level object in the output, keyed by sheet name. Each sheet's rows become an array of objects. Column headers come from the first row of the spreadsheet.
 
-You can **hide** entire sheets or columns from the output by appending `:hide` to the sheet name, or column title in the first row.
-
 ###### Example: Spreadsheet → JSON
 
 ![Spreadsheet example]({{ site.baseurl }}public/img/format_spreadsheet.png)
@@ -49,7 +47,7 @@ You can **hide** entire sheets or columns from the output by appending `:hide` t
 }
 ```
 
-The **notes** field and **other** tab aren't included in the output.
+**Hide** "sheets" (tabs) or columns from the output by appending `:hide` to its name, as with the **notes** field and **other** sheet.
 
 ### ArchieML
 
@@ -85,11 +83,11 @@ To begin, you'll need to have a few programs installed on your computer.
   <p class="info">The instructions below assume you are installing on a Mac using <a href="http://brew.sh/">Homebrew</a>.  If you plan to install on another operating system, <strong>please help us out</strong> by documenting the steps and issuing a pull request to our <a href="https://github.com/newsdev/driveshaft">GitHub repository</a>.</p>
 </div>
 
-**[git](http://git-scm.com/)** to download and update the source code
+**[Git](http://git-scm.com/)** to download and update the source code
 
     brew install git
 
-**[Node.js](https://nodejs.org/)**, **[npm](https://docs.npmjs.com/getting-started/installing-node)** and **[bower](http://bower.io/)** for JavaScript and CSS package management
+**[Node.js](https://nodejs.org/)**, **[npm](https://docs.npmjs.com/getting-started/installing-node)** and **[Bower](http://bower.io/)** for JavaScript and CSS package management
 
     brew install node
     npm install -g bower
@@ -132,6 +130,11 @@ By default, puma will run Driveshaft on [`http://localhost:9292`](http://localho
 * [Google Drive API]({{ site.basepath }}/authentication/) so Driveshaft can access your files
 * [Amazon S3]({{ site.basepath }}/s3/) file storage service to publish JSON to the internet and keep multiple versions around
 
+### Step 4: Deploy <small>(optional)</small>
+
+* Deploy to Heroku with [these instructions]({{ site.basepath }}/heroku/)
+* Or deploy to whatever server architecture you already use
+
 ## Tour
 
 You can try out our [demo deploy](https://gentle-caverns-1193.herokuapp.com/index) of Driveshaft on Heroku.
@@ -151,3 +154,7 @@ There are two sections:
 
 * **Edit, Convert, Download**. The top of the file page links to the source file, and lets you convert + download it using any of the available formats.
 * **Publish to S3**. Each S3 destination [configured](#TKTK) is listed and can be pubished to. There's a list of previous versions, each of which can be viewed or reverted to.
+
+## Thanks
+
+Released at the [OpenNews](http://opennews.org/) [Code Convening](http://opennews.org/blog/code-convening-wtd/) at the [2015 Write The Docs](http://www.writethedocs.org/conf/na/2015/) conference with the support of the [Knight Foundation](http://www.knightfoundation.org/) and [The Mozilla Foundation](https://www.mozilla.org/en-US/foundation/).

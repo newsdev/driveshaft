@@ -8,7 +8,9 @@ sections: [
 ]
 ---
 
-## API Endpoints
+## API endpoints
+
+Driveshaft provides several API endpoints for converting, publishing and updating JSON. This can be helpful when creating bookmarklets or webhook integrations.
 
 | method | endpoint | returns |
 | ------ | -------- | ------- |
@@ -20,13 +22,13 @@ sections: [
 
 #### Querystring options
 
-The `download` and `refresh` endpoints accept an optional `format` querystring parameter, corresponding to one of the [export formats]({{ site.baseurl }}#formats).
+The `download` and `refresh` endpoints let you pass an optional `format` querystring parameter. Set this to a corresponding [export formats]({{ site.baseurl }}#formats) to change how Driveshaft generates the JSON.
 
 Destinations can be specified in any URL-like format, such as `s3://BUCKET/KEY` or `http://BUCKET/KEY`.
 
 #### Responses
 
-The three `POST` endpoints will return a JSON-formatted response with the status of the request along with any error messages.
+The three `POST` endpoints will return a JSON-formatted response with the status of the request, along with any error messages.
 
 ``` bash
 $ curl -XPOST /:key/refresh
@@ -39,7 +41,7 @@ $ curl -XPOST /:key/restore/:destination
 {"status": "error", "error": "File not found: ******"}
 ```
 
-All endpoints also respond to `GET` requests, for use with bookmarklets.
+All endpoints also respond to `GET` requests, for ease of use with bookmarklets.
 
 The `versions` endpoint returns an array of objects in the following format:
 
@@ -62,13 +64,11 @@ The `versions` endpoint returns an array of objects in the following format:
 
 ## Environmental Variables
 
-Driveshaft relies on [environmental variables](http://en.wikipedia.org/wiki/Environment_variable) for configuration and authentication.  The process of setting variables differs from platform to platform.  (Instructions for [setting environmental variables in development](#env-in-development) are below.)
-
-Most of the variables listed here are not required to run Driveshaft; each category of variable, however, enables additional functionality.
+Driveshaft uses [environmental variables](http://en.wikipedia.org/wiki/Environment_variable) for settings and authenticating with other services.  The process of setting variables differs from platform to platform.  (Instructions for [setting environmental variables in development](#env-in-development) are below.)
 
 ### Google Authentication
 
-One or more of the following four authentication keys is **required to run Driveshaft**:
+At least one authentication key is **required** to run Driveshaft.
 
 * Public API Key (server-side)
   * `GOOGLE_APICLIENT_KEY` A public API key.
@@ -76,7 +76,7 @@ One or more of the following four authentication keys is **required to run Drive
   * `GOOGLE_APICLIENT_SERVICEACCOUNT` A path to, or JSON representation of, a "service account" JSON key.
 * Installed application (client-side)
   * `GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED` A path to, or JSON representation of, a "native application" / "installed" client secret JSON.
-  * `GOOGLE_APICLIENT_FILESTORAGE` Optional. Defaults to `~/.google_drive_oauth2.json`
+  * `GOOGLE_APICLIENT_FILESTORAGE` Optional cache location. Defaults to `~/.google_drive_oauth2.json`
 * Web application (client-side)
   * `GOOGLE_APICLIENT_CLIENTSECRETS_WEB` A path to, or JSON representation of, a "web application" client secret JSON.
 
