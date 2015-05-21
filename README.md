@@ -69,6 +69,7 @@ Driveshaft settings:
 ``` bash
 DRIVESHAFT_SETTINGS_AUTH_REQUIRED="false" # true to require client-side login
 DRIVESHAFT_SETTINGS_AUTH_DOMAIN="nytimes.com" # restrict login to a single domain
+DRIVESHAFT_SETTINGS_MAX_VERSIONS="5" # set to a maximum number of previous file versions to keep on S3
 ```
 
 Optional drive key and s3 destination for a Google Spreadsheet to use to power the index page. It should follow the format of [this spreadhseet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/edit#gid=0) (you can copy the spreadsheet into a new one to start).
