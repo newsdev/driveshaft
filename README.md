@@ -104,7 +104,7 @@ Questions / comments / feature requests / concerns? Please use the [Issues](http
 * [Michael Strickland](https://twitter.com/moriogawa)
 * [Scott Blumenthal](https://twitter.com/blumysden)
 
-Released at the [OpenNews](http://opennews.org/) [Code Convening](http://opennews.org/blog/code-convening-wtd/) at the [2015 Write The Docs](http://www.writethedocs.org/conf/na/2015/) conference.
+Released at the [OpenNews](http://opennews.org/) [Code Convening](http://opennews.org/blog/code-convening-wtd/) at the [2015 Write The Docs](http://www.writethedocs.org/conf/na/2015/) conference, with the support of the [Knight Foundation](http://www.knightfoundation.org/) and [The Mozilla Foundation](https://www.mozilla.org/en-US/foundation/).
 
 ## License
 
