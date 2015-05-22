@@ -17,6 +17,8 @@ module Driveshaft
         installed_client,
         web_client
       ].compact.select { |client| client.key || client.authorization.access_token }
+    rescue Exception => e
+      flash[:error] = "Error authenticating with the Google Drive API. #{e.message}"
     end
 
     def service_account_client
@@ -100,6 +102,8 @@ module Driveshaft
 
       def application_client
         installed_client || web_client
+      rescue Exception => e
+        flash[:error] = "Error authenticating with the Google Drive API. #{e.message}"
       end
 
       if $settings[:auth][:required]
