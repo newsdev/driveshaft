@@ -18,7 +18,6 @@ module Driveshaft
     helpers Sinatra::ContentFor
     register Sinatra::MultiRoute
 
-    set :raise_errors, false
     set :protection, :except => :path_traversal
 
     use Rack::Session::Cookie,
@@ -81,6 +80,7 @@ module Driveshaft
 
     get '/:file/versions/*' do
       get_file!
+      puts "splat: #{params[:splat].first}"
       bucket, key = parse_destination(params[:splat].first)
 
       objects = get_versions(bucket, key).reverse
