@@ -240,9 +240,11 @@ module Driveshaft
         key = key.sub(/\.json$/, "-#{version}.json") if version
         settings = JSON.load($s3_resources.bucket(bucket).object(key).get.body).values.first
       rescue Exception => e
-        # Bootstrap the settings json
-        settings = [{'key' => $settings[:index][:key], 'publish' => $settings[:index][:destination]}]
+        settings = nil
       end
+
+      # Bootstrap the settings json
+      settings ||= [{'key' => $settings[:index][:key], 'publish' => $settings[:index][:destination]}]
 
       files = Hash[*settings.map do |row|
         file_config = row.dup
