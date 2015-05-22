@@ -80,7 +80,6 @@ module Driveshaft
 
     get '/:file/versions/*' do
       get_file!
-      puts "splat: #{params[:splat].first}"
       bucket, key = parse_destination(params[:splat].first)
 
       objects = get_versions(bucket, key).reverse
@@ -335,7 +334,7 @@ module Driveshaft
     # http://BUCKET.s3.amazonaws.com/KEY
     # http://s3.amazonaws.com/BUCKET/KEY
     def parse_destination(destination)
-      components = destination.match(/(?:(?:https?|s3):\/\/)?(?:(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)|([\.\-_\w]+?)?)(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)?\/(?:([\.\-_\w]*?)\/)?(.+)/).to_a.compact
+      components = destination.match(/(?:(?:https?|s3):\/{1,2})?(?:(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)|([\.\-_\w]+?)?)(?:\.?s3(?:\.|-)[\-\w]*\.?amazonaws\.com)?\/(?:([\.\-_\w]*?)\/)?(.+)/).to_a.compact
       [components[1], components[2..-1].join('/')]
     rescue Exception => e
       puts "Error parsing S3 destination from '#{destination}'."
