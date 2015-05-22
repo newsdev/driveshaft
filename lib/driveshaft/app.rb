@@ -38,7 +38,7 @@ module Driveshaft
 
     # Homepage is listed under "index" to allow accessing versions appended to
     # the path, without creating ambiguity with the "/:file" route.
-    get '/index*' do
+    get '/index/?*' do
       if params[:splat] && params[:splat].first.match(/\.json$/)
         if (version = params[:splat].first[1..-5]).length > 0
           @files = get_settings(version)
@@ -56,7 +56,7 @@ module Driveshaft
       end
     end
 
-    get '/:file' do
+    get '/:file/?' do
       get_file!
       @destinations.map! do |destination|
         bucket, key = destination
@@ -107,12 +107,12 @@ module Driveshaft
       return versions.to_json
     end
 
-    get '/:file/edit' do
+    get '/:file/edit/?' do
       get_file!
       redirect(@file['alternateLink'])
     end
 
-    get '/:file/download' do
+    get '/:file/download/?' do
       get_file!
       begin
         export = Driveshaft::Exports.export(@file, @export_format, *clients)
@@ -128,7 +128,7 @@ module Driveshaft
       export[:body]
     end
 
-    route :get, :post, '/:file/refresh.?:format?' do
+    route :get, :post, '/:file/refresh/?.?:format?' do
       get_file!
 
       if !@destinations || @destinations.length == 0
