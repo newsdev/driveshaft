@@ -25,7 +25,7 @@ $settings = {
 
 $google_service_account = if service_path = ENV['GOOGLE_APICLIENT_SERVICEACCOUNT']
   begin  JSON.load(File.read(File.expand_path(service_path)));
-  rescue; JSON.load(File.read(service_path)); end
+  rescue; JSON.load(service_path); end
 end
 
 # Either an "installed" / "native application" OR "web application" client
