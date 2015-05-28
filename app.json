@@ -11,9 +11,6 @@
     "pipeline"
   ],
   "website": "https://newsdev.github.io/driveshaft/",
-  "scripts": {
-    "postdeploy": "./node_modules/bower/bin/bower install"
-  },
   "success_url": "/index",
   "env": {
     "BUILDPACK_URL": "https://github.com/ddollar/heroku-buildpack-multi",
