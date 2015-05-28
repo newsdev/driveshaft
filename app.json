@@ -1,0 +1,73 @@
+{
+  "name": "Driveshaft",
+  "description": "Publish Google Drive files as JSON to S3",
+  "keywords": [
+    "google",
+    "drive",
+    "s3",
+    "aws",
+    "json",
+    "publish",
+    "pipeline"
+  ],
+  "website": "https://newsdev.github.io/driveshaft/",
+  "success_url": "/index",
+  "env": {
+    "BUILDPACK_URL": "https://github.com/ddollar/heroku-buildpack-multi",
+    "GOOGLE_APICLIENT_KEY": {
+      "description": "A public API key for Google API access",
+      "required": false
+    },
+    "GOOGLE_APICLIENT_SERVICEACCOUNT": {
+      "description": "A path to, or JSON representation of, a service account JSON key",
+      "required": false
+    },
+    "GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED": {
+      "description": "A path to, or JSON representation of, a native application / installed client secret JSON",
+      "required": false
+    },
+    "GOOGLE_APICLIENT_FILESTORAGE": {
+      "description": "Optional cache location. For use with CLIENTSECRETS_INSTALLED.",
+      "required": false
+    },
+    "GOOGLE_APICLIENT_CLIENTSECRETS_WEB": {
+      "description": "A path to, or JSON representation of, a web application client secret JSON",
+      "required": false
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "description": "The access key of your Amazon AWS user or IAM accont",
+      "required": false
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "description": "The secret key corresponding to your access key",
+      "required": false
+    },
+    "AWS_REGION": {
+      "description": "The AWS region to use for S3",
+      "required": false,
+      "value": "us-east-1"
+    },
+    "DRIVESHAFT_SETTINGS_AUTH_REQUIRED": {
+      "description": "If true, then successful client-side authentication will be required to access any page",
+      "required": false,
+      "value": "false"
+    },
+    "DRIVESHAFT_SETTINGS_AUTH_DOMAIN": {
+      "description": "If specified, allows client-side authentication for users within the specified domain only",
+      "required": false
+    },
+    "DRIVESHAFT_SETTINGS_MAX_VERSIONS": {
+      "description": "If set, only this number of versions of a file will be kept. Older versions will be removed.",
+      "required": false,
+      "value": "100"
+    },
+    "DRIVESHAFT_SETTINGS_INDEX_KEY": {
+      "description": "The Google Drive key of a Google Spreadsheet that lists files and their destinations",
+      "required": false
+    },
+    "DRIVESHAFT_SETTINGS_INDEX_DESTINATION": {
+      "description": "A url-formatted destination on S3 to which the configuration will be built (e.g., s3://BUCKET/PATH)",
+      "required": false
+    }
+  }
+}

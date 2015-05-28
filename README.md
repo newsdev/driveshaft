@@ -10,6 +10,12 @@
 
 For the full user guide, please refer to the [documentation](https://newsdev.github.io/driveshaft/). Or, if you're somewhat familiar with Ruby applications and Google Authentication / S3, use this quickstart guide to get up and running.
 
+### Heroku Quickstart
+
+[Deploy instantly](https://newsdev.github.io/driveshaft/heroku/#deploy-button) with Heroku.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 ### Dependencies
 
 Be sure to have the following system dependencies installed:
