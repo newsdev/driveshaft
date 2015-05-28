@@ -53,7 +53,7 @@
     "DRIVESHAFT_SETTINGS_AUTH_REQUIRED": {
       "description": "If true, then successful client-side authentication will be required to access any page",
       "required": false,
-      "value": false
+      "value": "false"
     },
     "DRIVESHAFT_SETTINGS_AUTH_DOMAIN": {
       "description": "If specified, allows client-side authentication for users within the specified domain only",
@@ -62,7 +62,7 @@
     "DRIVESHAFT_SETTINGS_MAX_VERSIONS": {
       "description": "If set, only this number of versions of a file will be kept. Older versions will be removed.",
       "required": false,
-      "value": 100
+      "value": "100"
     },
     "DRIVESHAFT_SETTINGS_INDEX_KEY": {
       "description": "The Google Drive key of a Google Spreadsheet that lists files and their destinations",
