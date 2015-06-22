@@ -48,7 +48,7 @@ Google offers several types of credentials. You only have to enable one for Driv
 
 Pick a type below, and follow the instructions to create the credentials.
 
-### 1. Public API Key
+<h3 id="api-key">1. Public API Key</h3>
 
 An API Key will let Driveshaft access public Google Drive files.
 
@@ -74,13 +74,13 @@ GOOGLE_APICLIENT_KEY="AIzaSyC9HbVP3r2_ER0x8qZTW7DZnq1cnFNkpsI" puma
 
 [Click here]({{ site.basepath }}/reference#environmental-variables) for more information on Driveshaft and environmental variables.
 
-### 2. OAuth2
+<h3 id="oauth">2. OAuth2</h3>
 
 Google offers three options for authenticating using [OAuth2](http://oauth.net/2/). Each lets Driveshaft access public and certain private files, and give you more flexibility than public API keys.
 
 To create OAuth credentials, go to the **Credentials** page and click on **Create new Client ID**. Then, select one of the following:
 
-#### Type 1: Web application
+<h4 id="oauth-web-application">Type 1: Web application</h4>
 
 This type of credential will add a "sign in" link to Driveshaft. Users can click it and give Driveshaft permission to read Google Drives they have access to.
 
@@ -115,7 +115,7 @@ GOOGLE_APICLIENT_CLIENTSECRETS_WEB="~/client_secret_102...json"
 GOOGLE_APICLIENT_CLIENTSECRETS_WEB="{\"web\":{\"auth_uri\":\"h..."
 ```
 
-#### Type 2: Service account
+<h4 id="oauth-service-account">Type 2: Service account</h4>
 
 Creating a service account creates a special email address that you can share files with. Driveshaft can use the service account credentials to read those files, without the user having to log in.
 
@@ -138,7 +138,7 @@ GOOGLE_APICLIENT_SERVICEACCOUNT="~/NYT_Driveshaft-2142...json"
 GOOGLE_APICLIENT_SERVICEACCOUNT="{\"private_key_id\":\"2142..."
 ```
 
-#### Type 3: Installed application
+<h4 id="oauth-installed-application">Type 2: Installed application</h4>
 
 This type is for applications where the server and the user are on the same device. This is essentially what you're doing when you run Driveshaft on your computer.
 
