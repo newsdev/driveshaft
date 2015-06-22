@@ -155,7 +155,7 @@ module Driveshaft
         if destination && !destination.match(/^\/auth\//)
           redirect(destination)
         else
-          redirect('/')
+          redirect('/index')
         end
       end
 
@@ -163,7 +163,7 @@ module Driveshaft
         session[:access_token] = session[:refresh_token] = session[:expires_in] = session[:issued_at] = session[:email] = nil
         @web_client = @installed_client = nil
         File.delete($google_client_secrets_installed_cache) if File.exist?($google_client_secrets_installed_cache)
-        redirect('/')
+        redirect('/index')
       end
 
     end
