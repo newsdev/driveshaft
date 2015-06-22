@@ -34,6 +34,8 @@ You'll be taken to the Drive API page, where you can enable that API for your ne
 
 ![Click on Enable API]({{ site.baseurl }}public/img/auth_04.png)
 
+If you will be using web-based OAuth2 authenication (as opposed to a service account), also enable the **Google+ API**.
+
 To finish configuring your project, click on **Consent screen** underneath APIs & auth, and enter a name for your project / product.
 
 ![Click on Consent screen]({{ site.baseurl }}public/img/auth_05.png)
