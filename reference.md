@@ -4,7 +4,8 @@ title: Reference
 sections: [
   ['API Endpoints', 'api-endpoints'],
   ['Environmental Variables', 'environmental-variables'],
-  ['Adding Formats', 'adding-formats']
+  ['Adding Formats', 'adding-formats'],
+  ['Troubleshooting', 'troubleshooting']
 ]
 ---
 
@@ -125,10 +126,71 @@ Restart your terminal window after editing this file for the variables to be ava
 
 ## Adding Formats
 
-By default, Driveshaft can convert [spreadsheets and ArchieML]({{ site.basepath}}/#formats) (the default for Google Documents) to JSON, but you can add parsers for additional formats yourself.
+By default, Driveshaft can convert [spreadsheets and ArchieML]({{ site.baseurl }}#formats) (the default for Google Documents) to JSON, but you can add parsers for additional formats yourself.
 
 Per-MIME Type defaults are set in `lib/driveshaft/exports.rb`.
 
 Additional formats can be added by creating additional files in the `lib/driveshaft/exports` directory, and exposing a class method on `Driveshaft::Exports` that accepts the Drive file and a Google APIClient for making API calls.
 
 It should return an object that can be passed directly to the AWS gems [S3::Object.put method](http://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Object.html#put-instance_method), letting you set custom permissions and metadata on the file if you wish.
+
+## Troubleshooting
+
+A list of errors that people have experienced in the past, with possible solutions.
+
+If your error isn't listed, or the solution doesn't work, please [open a new Issue](https://github.com/newsdev/driveshaft/issues/new) on Github.
+
+### Runtime errors
+
+You might see these errors in your application logs, or in a message within the admin.
+
+#### Redirect URI mismatch
+
+```
+Error: redirect_uri_mismatch
+The redirect URI in the request: http://example.com/auth/callback did not match a registered redirect URI
+```
+
+Make sure that the [callback url]({{ site.baseurl }}authentication/#oauth-web-application) listed in your Google Project's "Web application" OAuth2 credentials includes the correct hostname and path for your app. The host should include the port if it is not 80 or 443 (e.g., `http://localhost:3000/auth/callback`), and should always end with `/auth/callback`.
+
+If you change any of these settings, you will need to export the OAuth2 JSON again, and update it your `GOOGLE_APICLIENT_CLIENTSECRETS_WEB` variable in Heroku if necessary.
+
+#### Internal Server Error
+
+If you get a screen with this message, it means something has gone wrong with the application code. Look at your local server logs for a more specific error message (or if you're using Heroku, run `heroku logs -a HEROKU-APP-ID`).
+
+#### Authentication Error
+
+```
+Authentication Error: Google OAuth2 token did not include user's email. Make sure you Google Project settings includes access to the Google+ API.
+```
+
+Try enabling the **Google+ API** on your [Google Project's settings]({{ site.baseurl }}authentication/#create-project).
+
+#### Invalid code / Code was already redeemed
+
+If you see this message when logging in, it means something has gone wrong with the OAuth2 callback. In the past, this has occurred when debugging a new OAuth setup. Try creating regenerating your OAuth JSON with the same settings, and trying again.
+
+### Errors when deploying with Heroku
+
+You might see these errors on the Heroku dashboard when creating an app for the first time with the Deploy Button, or when pushing changes to your heroku git repository.
+
+```
+There was an issue building your app. This can mean your app.json's project is not a valid Heroku application. Please ensure your app is deployable to Heroku and try again.
+```
+
+```
+-----> Fetching custom git buildpack... done
+-----> Multipack app detected
+=====> Downloading Buildpack: https://github.com/heroku/heroku-buildpack-nodejs.git
+ !     Push rejected, failed to compile Multipack app
+```
+
+```
+-----> Fetching custom git buildpack... failed
+ !     Push rejected, error fetching custom buildpack
+```
+
+These tend to [happen randomly](http://stackoverflow.com/a/18965269) when using custom buildpacks, and is realted to Heroku communicating with the repositories listed in [`.buildpacks`](https://github.com/newsdev/driveshaft/blob/master/.buildpacks).
+
+**Try your command or action again and see if it works.** (Silly, but it tends to work.)
