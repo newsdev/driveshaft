@@ -127,7 +127,12 @@ module Driveshaft
 
           redirect('/auth/authorize') if $settings[:auth][:domain] && $settings[:auth][:domain] != person['domain']
 
-          person['emails'].first['value']
+          begin
+            person['emails'].first['value']
+          rescue Exception => e
+            flash[:error] = "Authentication Error: Google OAuth2 token did not include user's email. Make sure your Google Project has enabled access to the Google+ API."
+            return
+          end
         )
 
         session[:access_token] = application_client.authorization.access_token
