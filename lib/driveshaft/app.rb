@@ -116,9 +116,10 @@ module Driveshaft
       begin
         export = Driveshaft::Exports.export(@file, @export_format, *clients)
       rescue Exception => e
-        status 500
+        status 200
         export = {
           content_type: 'application/json',
+          backtrace: e.backtrace,
           body: "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
         }
       end
