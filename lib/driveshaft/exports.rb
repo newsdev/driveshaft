@@ -13,7 +13,6 @@ module Driveshaft
 
       clients.each do |client|
         begin
-          puts Driveshaft::Exports.send(format.to_sym, file, client)
           return Driveshaft::Exports.send(format.to_sym, file, client)
         rescue Exception => e
           error = e

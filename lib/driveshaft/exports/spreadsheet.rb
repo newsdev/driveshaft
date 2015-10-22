@@ -17,7 +17,6 @@ module Driveshaft
         link     = file['exportLinks']['text/csv'] + "&gid=#{gid}"
         csv_data = client.execute(uri: link).body
 
-        puts "Sheet #{sheet_name}"
         data[sheet_name] = []
 
         table = CSV.parse(csv_data, headers: true)
