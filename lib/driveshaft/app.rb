@@ -121,7 +121,7 @@ module Driveshaft
           content_type: 'application/json; charset=utf-8',
           body: {
             "message": "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})",
-            "backtrace": e.backtrace,
+            "backtrace": e.backtrace.join("\n"),
             "status": "error"
           }
         }
