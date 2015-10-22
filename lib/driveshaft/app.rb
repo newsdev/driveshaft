@@ -118,9 +118,12 @@ module Driveshaft
       rescue Exception => e
         status 200
         export = {
-          content_type: 'application/json',
-          backtrace: e.backtrace,
-          body: "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
+          content_type: 'application/json; charset=utf-8',
+          body: {
+            "message": "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})",
+            "backtrace": e.backtrace,
+            "status": "error"
+          }
         }
       end
 
