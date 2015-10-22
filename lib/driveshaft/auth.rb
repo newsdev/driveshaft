@@ -8,7 +8,7 @@ module Driveshaft
     CLIENT = Google::APIClient.new(
       application_name: 'Driveshaft',
       application_version: Driveshaft::VERSION,
-      force_encoding: 'UTF-8'
+      force_encoding: true
     )
 
     def clients

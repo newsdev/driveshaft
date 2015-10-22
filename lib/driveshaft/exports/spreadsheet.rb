@@ -15,7 +15,7 @@ module Driveshaft
         next if sheet_name.match(/:hide$/)
 
         link     = file['exportLinks']['text/csv'] + "&gid=#{gid}"
-        csv_data = client.execute(uri: link).body
+        csv_data = client.execute(uri: link).body.force_encoding(Encoding::UTF_8)
 
         data[sheet_name] = []
 
