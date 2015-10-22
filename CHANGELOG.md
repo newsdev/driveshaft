@@ -1,11 +1,12 @@
 # Driveshaft Changelog
 
-## v0.1.2 (in progress)
+## v0.1.2 - 2015-10-22
 
 ### Bugs
 
 * Google OAuth2 settings should enable the "Google+ API", to enable accessing users' email addresses for identification.
 * Added a [Troubleshooting guide](https://github.io/newsdev/driveshaft/reference/#troubleshooting) to the documentation.
+* Force encoding of Google Spreadsheets to UTF-8 to avoid encoding errors from characters not in US-ASCII.
 
 ## v0.1.1 - 2015-05-28
 
