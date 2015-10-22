@@ -16,11 +16,11 @@ module Driveshaft
 
         link     = file['exportLinks']['text/csv'] + "&gid=#{gid}"
         csv_data = client.execute(uri: link).body
-        puts csv_data.encoding
+        csv_data.encode!(Encoding::UTF_8)
 
         data[sheet_name] = []
 
-        table = CSV.parse(csv_data, headers: true, encoding: 'ISO8859-1')
+        table = CSV.parse(csv_data, headers: true)
         table.each do |row|
           entry = row.to_h
           entry.keys.select { |k| k && k.match(/:hide$/) }.each { |k| entry.delete(k) }
