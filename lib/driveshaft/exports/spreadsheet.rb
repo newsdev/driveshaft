@@ -30,7 +30,7 @@ module Driveshaft
 
       return {
         body: JSON.dump(data),
-        content_type: 'application/json'
+        content_type: 'application/json; charset=utf-8'
       }
     end
 
