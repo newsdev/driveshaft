@@ -16,7 +16,6 @@ module Driveshaft
 
         link     = file['exportLinks']['text/csv'] + "&gid=#{gid}"
         csv_data = client.execute(uri: link).body
-        csv_data.encode!(Encoding::UTF_8)
 
         data[sheet_name] = []
 
