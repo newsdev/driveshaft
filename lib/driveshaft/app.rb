@@ -117,6 +117,8 @@ module Driveshaft
         export = Driveshaft::Exports.export(@file, @export_format, *clients)
       rescue Exception => e
         status 200
+        puts e.message
+        puts e.backtrace
         export = {
           content_type: 'application/json; charset=utf-8',
           body: {
