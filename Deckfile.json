@@ -1,0 +1,14 @@
+{
+    "deckfile_version": 2,
+    "name": "Driveshaft",
+    "byline": "By Michael Strickland",
+    "summary": "Driveshaft is a Sinatra application built to turn Google Spreadsheets and Google Documents into JSON with the click of a button.",
+    "has_icon": true, 
+    "readme": "https://github.com/newsdev/driveshaft/blob/develop/README.md",
+    "docs": "http://newsdev.github.io/driveshaft/",
+    "contact_email": "michael.strickland@nytimes.com",
+    "contact_name": "Michael Strickland",
+    "contact_slack": "@michael",
+    "tags_json": ["dev"],
+    "examples_json": []
+}
