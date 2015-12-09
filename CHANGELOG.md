@@ -1,5 +1,9 @@
 # Driveshaft Changelog
 
+## v0.1.3 - 2015-12-09
+
+* Updated Dockerfile to use a new base image from The New York Times.
+
 ## v0.1.2 - 2015-10-22
 
 ### Bugs
