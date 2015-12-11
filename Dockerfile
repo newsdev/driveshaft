@@ -62,7 +62,7 @@ COPY package.json /usr/src/app/
 RUN npm install --ignore-scripts
 
 # Install bower dependencies
-COPY bower.json /usr/src/app/
+COPY bower.json .bowerrc /usr/src/app/
 RUN ./node_modules/bower/bin/bower --allow-root --config.interactive=false install
 
 # Copy the rest of the application source
