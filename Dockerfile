@@ -41,6 +41,7 @@ RUN \
   tar --strip-components 1 -xzf node-v$NODE_VERSION-linux-x64.tar.gz node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include node-v$NODE_VERSION-linux-x64/lib && \
   rm node-v$NODE_VERSION-linux-x64.tar.gz
 
+
 # Set the working directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -62,4 +63,4 @@ COPY . /usr/src/app
 
 # Run the server
 EXPOSE 3000
-CMD ["puma", "-t", "16:16", "-p", "3000"]
+CMD make
