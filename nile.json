@@ -13,7 +13,7 @@
         {
             "notify": "driveshaft-dev", 
             "branch": "develop", 
-            "version": "0.0.1", 
+            "version": "0.3.0", 
             "tags": ["latest"], 
             "autodeploy": true
         }
