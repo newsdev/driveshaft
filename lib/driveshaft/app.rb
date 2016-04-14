@@ -92,7 +92,7 @@ module Driveshaft
           bucket: bucket,
           key: object.key,
           url: "http://#{bucket}.s3.amazonaws.com/#{object.key}",
-          presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil),
+          presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: object.key) rescue nil),
           etag: etag,
 
           timestamp: object.key.match(/(\d{8}-\d{6}).\w+$/)[1],
