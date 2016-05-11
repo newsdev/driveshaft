@@ -3,6 +3,7 @@
     "cluster": "alpine.nile.works",
     "image": "quay.io/washpost/driveshaft",
     "port": 3000,
+    "log_driver": "awslogs",
     "routes": [
         {
             "paths": ["/"],
@@ -11,10 +12,10 @@
     ],
     "builds": [
         {
-            "notify": "driveshaft-dev", 
-            "branch": "develop", 
-            "version": "0.3.1", 
-            "tags": ["latest"], 
+            "notify": "driveshaft-dev",
+            "branch": "develop",
+            "version": "0.3.1",
+            "tags": ["latest"],
             "autodeploy": true
         }
     ],
