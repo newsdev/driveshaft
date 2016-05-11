@@ -1,0 +1,33 @@
+{
+    "name": "driveshaft",
+    "cluster": "alpine.nile.works",
+    "image": "quay.io/washpost/driveshaft",
+    "port": 3000,
+    "log_driver": "awslogs",
+    "routes": [
+        {
+            "paths": ["/"],
+            "external": false
+        }
+    ],
+    "builds": [
+        {
+            "notify": "driveshaft-dev",
+            "branch": "develop",
+            "version": "0.3.1",
+            "tags": ["latest"],
+            "autodeploy": true
+        }
+    ],
+    "stages": [
+        {
+            "name": "dev",
+            "scale": 2,
+            "domain": "driveshaft.wpit.nile.works",
+            "environment": {
+                "GOOGLE_APICLIENT_SERVICEACCOUNT": "/usr/src/app/google.json",
+                "OPENSSL_ENCRYPTION_PASSWORD": "%{CiClOegDKXvMQp4KMb/u0zAHKQbdhunasZFFLL8EnxA2MxKtAQEBAgB4pTnoAyl7zEKeCjG/7tMwBykG3Ybp2rGRRSy/BJ8QNjMAAACEMIGBBgkqhkiG9w0BBwagdDByAgEAMG0GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM3TAryTvsBdM+6p/RAgEQgECMn7iZ4cUoUjToopfF5vOTUZy65F59Q7krWi1omyFlQQvfGwsziiMITVqF72NIwBHTYuL364hOabslCdeI69u1}"
+            }
+        }
+    ]
+}

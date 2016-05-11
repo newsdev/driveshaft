@@ -41,13 +41,6 @@ RUN \
   tar --strip-components 1 -xzf node-v$NODE_VERSION-linux-x64.tar.gz node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include node-v$NODE_VERSION-linux-x64/lib && \
   rm node-v$NODE_VERSION-linux-x64.tar.gz
 
-# Install kubernetes-secret-env
-ENV KUBERNETES_SECRET_ENV_VERSION=0.0.1-rc0
-RUN \
-  mkdir -p /etc/secret-volume && \
-  cd /usr/local/bin && \
-  curl -sfLO https://github.com/buth/kubernetes-secret-env/releases/download/v$KUBERNETES_SECRET_ENV_VERSION/kubernetes-secret-env && \
-  chmod +x kubernetes-secret-env
 
 # Set the working directory
 RUN mkdir -p /usr/src/app
@@ -70,5 +63,4 @@ COPY . /usr/src/app
 
 # Run the server
 EXPOSE 3000
-ENTRYPOINT ["kubernetes-secret-env"]
-CMD ["puma", "-t", "16:16", "-p", "3000"]
+CMD make
