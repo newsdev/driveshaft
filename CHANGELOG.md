@@ -1,5 +1,13 @@
 # Driveshaft Changelog
 
+## v0.1.5 - 2016-06-20
+
+* Fixed Dockerfile reference to newsdev/kubernetes-secret-env.
+
+## v0.1.4 - 2016-06-20
+
+* Upgraded the archieml gem to support freeform arrays.
+
 ## v0.1.3 - 2015-12-09
 
 * Updated Dockerfile to use a new base image from The New York Times.
