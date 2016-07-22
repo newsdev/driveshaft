@@ -37,7 +37,7 @@ authors:
   #   url:            https://twitter.com/TK
 
 # Custom vars
-version:          0.1.1
+version:          0.1.6
 
 github:
   repo:           https://github.com/newsdev/driveshaft
