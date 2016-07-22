@@ -1,5 +1,9 @@
 # Driveshaft Changelog
 
+## v0.1.6 - 2916-07-22
+
+* Fix for bug #28 around incorrectly convert Google Doc links to HTML.
+
 ## v0.1.5 - 2016-06-20
 
 * Fixed Dockerfile reference to newsdev/kubernetes-secret-env.
