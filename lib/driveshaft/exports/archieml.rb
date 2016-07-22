@@ -47,7 +47,7 @@ module Driveshaft
             href = parsed_url['q'][0] if parsed_url['q']
           end
 
-          str = "<a href=\"#{href}\">\n"
+          str = "<a href=\"#{href}\">"
           str += convert_node(node)
           str += "</a>"
           return str
