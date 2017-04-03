@@ -275,6 +275,7 @@ module Driveshaft
         {
           bucket: bucket,
           key: key,
+          format: file_config['format'],
           url: "http://#{bucket}.s3.amazonaws.com/#{key}",
           presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
         }

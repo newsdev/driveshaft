@@ -62,7 +62,7 @@
       </div>
       <div class="content-primary col-xs-12 col-sm-11 clearfix">
         <h4 class="pull-left">
-          <a href="/<%%= key %>"><%%= name || key %></a>
+          <a href="/<%%= key %><%% if (format && format.length > 0) { %>?format=<%%= format %><%% } %>"><%%= name || key %></a>
         </h4>
 
         <p class="text-right">
