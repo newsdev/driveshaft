@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler'
+require './lib/iap_verifier'
 Bundler.require
 
 require 'rack'
@@ -53,4 +54,5 @@ require './lib/driveshaft'
 require './lib/driveshaft/app'
 require './lib/driveshaft/auth'
 
+use Auth::IAPVerifier
 run Driveshaft::App.new

@@ -15,3 +15,5 @@ gem 'google-api-client', '~> 0.8.2'
 
 gem 'nokogiri', '~> 1.6.6.2'
 gem 'archieml', '~> 0.3.0'
+gem 'jwt'
+gem 'typhoeus'
