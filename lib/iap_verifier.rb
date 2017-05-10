@@ -168,8 +168,8 @@ module Auth
           return return_forbidden "EMAIL NOT PERMITTED ACCESS. CONTACT APPLICATION OWNER. IP: [#{request.ip}]", request, true
         end
       
-      rescue
-        return return_forbidden "BAD JWT TOKEN. MALFORMED2. IP: [#{request.ip}], APIKEY [#{api_key}], UNVERIFIED: [#{unverified}]", request
+      rescue => e
+        return return_forbidden "BAD JWT TOKEN. MALFORMED2. IP: [#{request.ip}], errors: #{errors}, e: #{e}", request
       end
 
       continue_request(env, request, 'NO SKIP')
