@@ -169,7 +169,7 @@ module Auth
         end
       
       rescue
-        return return_forbidden "BAD JWT TOKEN. MALFORMED2. IP: [#{request.ip}]", request
+        return return_forbidden "BAD JWT TOKEN. MALFORMED2. IP: [#{request.ip}], APIKEY [#{api_key}], UNVERIFIED: [#{unverified}]", request
       end
 
       continue_request(env, request, 'NO SKIP')
