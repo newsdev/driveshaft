@@ -42,7 +42,7 @@ $ bundle install
 
 ### Environmental Variables
 
-Driveshaft uses environmental variables for configuration. Set the following variables either at runtime on the commandline, or in your `/~.bash_profile`.
+Driveshaft uses environmental variables for configuration. Set the following variables either at runtime on the commandline, or in your `~/.bash_profile`.
 
 Set **at least one**, or several, of the following to authenticate against the Google API. You will need to set up a [Google Developers Project](https://console.developers.google.com/project) with the Drive API enabled. Then create a set of credentials. Public API Keys, and any of the three OAuth2 mechanisms, are supported.
 
@@ -59,7 +59,7 @@ GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED="***"
 GOOGLE_APICLIENT_CLIENTSECRETS_WEB="***"
 
 # Service Account
-GOOGLE_APICLIENT_CLIENTSECRETS_SERVICEACCOUNT="***"
+GOOGLE_APICLIENT_SERVICEACCOUNT="***"
 ```
 
 Required for S3 access. Use credentials that have access to any S3 buckets you wish to use.
