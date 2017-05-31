@@ -121,11 +121,11 @@ module Driveshaft
         puts e.backtrace
         export = {
           content_type: 'application/json; charset=utf-8',
-          body: {
+          body: JSON.dump({
             "message" => "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})",
             "backtrace" => e.backtrace.join("\n"),
             "status" => "error"
-          }
+          })
         }
       end
 
