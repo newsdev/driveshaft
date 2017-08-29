@@ -44,6 +44,7 @@ end
 $google_client_key = ENV['GOOGLE_APICLIENT_KEY']
 
 if ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY'] && ENV['AWS_REGION']
+  Aws.config.update(endpoint: ENV['AWS_ENDPOINT'] || 'https://s3.amazonaws.com')
   $s3           = Aws::S3::Client.new
   $s3_resources = Aws::S3::Resource.new
   $s3_presigner = Aws::S3::Presigner.new

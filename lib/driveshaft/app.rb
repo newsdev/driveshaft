@@ -293,7 +293,7 @@ module Driveshaft
       directory = key.sub(/(?<!\/)([^\/]+$)/, '')
       basename  = File.basename(key).sub(/\.\w+$/, '')
 
-      objects = $s3.list_objects(bucket: bucket, prefix: directory, delimiter: '/').contents
+      objects = $s3.list_objects(bucket: bucket, prefix: directory, delimiter: '/', encoding_type: nil).contents
       objects.select! { |object| object.key.match(/(?:^|\/)#{basename}-\d{8}-\d{6}\.\w+$/) }
       objects
     end
