@@ -34,6 +34,10 @@ module Driveshaft
       redirect('/index')
     end
 
+    get '/healthcheck' do
+      status 200
+    end
+
     # Homepage is listed under "index" to allow accessing versions appended to
     # the path, without creating ambiguity with the "/:file" route.
     get '/index/?*' do
@@ -49,7 +53,6 @@ module Driveshaft
         return @files.values.to_json
 
       else
-        @clients = clients
         return erb :index
       end
     end
@@ -73,7 +76,6 @@ module Driveshaft
         })
       end
 
-      @clients = clients
       return erb :file
     end
 
