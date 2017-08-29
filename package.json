@@ -3,13 +3,13 @@
   "version": "0.1.2",
   "private": true,
   "dependencies": {
-    "bower": "1.4.1"
+    "bootstrap": "3.3.7",
+    "underscore": "1.8.3",
+    "jquery": "3.2.1",
+    "adcom": "newsdev/adcom#v0.1.5"
   },
   "engine": {
     "node": "0.10.x",
     "npm": "1.3.x"
-  },
-  "scripts": {
-    "postinstall": "./node_modules/bower/bin/bower install"
   }
 }
