@@ -16,7 +16,6 @@ module Driveshaft
       scopes = ['https://www.googleapis.com/auth/drive']
       [
         application_default,
-        web,
       ].compact
     end
 
