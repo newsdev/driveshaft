@@ -39,10 +39,10 @@
   </ul>
 </div>
 
-<h3><%= @file['title'] %></h3>
+<h3><%= @file.name %></h3>
 
 <p class="help-block">
-  <a class="btn btn-sm btn-default" target="_blank" href="<%= @file['alternateLink'] %>">Edit the source <%= @file['mimeType'].split('.').last.titleize %></a>
+  <a class="btn btn-sm btn-default" target="_blank" href="<%= @file.web_view_link %>">Edit the source <%= @file.mime_type.split('.').last %></a>
 </p>
 
 <hr>

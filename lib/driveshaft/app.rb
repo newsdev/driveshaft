@@ -6,9 +6,8 @@ require 'sinatra/content_for'
 require 'sinatra/multi_route'
 require 'rack-flash'
 
-require 'google/api_client'
-require 'google/api_client/auth/file_storage'
-require 'google/api_client/auth/installed_app'
+require 'google/apis/drive_v3'
+require 'google/apis/plus_v1'
 
 require './lib/driveshaft/exports'
 require './lib/driveshaft/version'
@@ -108,13 +107,13 @@ module Driveshaft
 
     get '/:file/edit/?' do
       get_file!
-      redirect(@file['alternateLink'])
+      redirect(@file.web_view_link)
     end
 
     get '/:file/download/?' do
       get_file!
       begin
-        export = Driveshaft::Exports.export(@file, @export_format, *clients)
+        export = Driveshaft::Exports.export(@file, @export_format, *drive_services)
       rescue Exception => e
         status 200
         puts e.message
@@ -122,7 +121,7 @@ module Driveshaft
         export = {
           content_type: 'application/json; charset=utf-8',
           body: JSON.dump({
-            "message" => "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})",
+            "message" => "Error converting #{@file.name || @file.id} into #{@export_format}. (#{e.message})",
             "backtrace" => e.backtrace.join("\n"),
             "status" => "error"
           })
@@ -158,7 +157,7 @@ module Driveshaft
     route :get, :post, '/:file/refresh/*' do
       get_file!
       bucket, key = parse_destination(params[:splat].first)
-      refresh!(bucket, key) unless @file['error']
+      refresh!(bucket, key) unless @file.nil?
 
       if request.request_method == "POST"
         content_type :json
@@ -178,7 +177,7 @@ module Driveshaft
       timestamp = key.match(/(\d{8}-\d{6}).\w+$/)[1]
       key.gsub!(/-#{timestamp}/, '')
 
-      restore!(bucket, key, timestamp) unless @file['error']
+      restore!(bucket, key, timestamp) unless @file.nil?
 
       if request.request_method == "POST"
         content_type :json
@@ -203,27 +202,31 @@ module Driveshaft
         @key  = params[:file]
         @file = nil
 
-        clients.each_with_index do |client, idx|
-          file_body = client.execute(
-            api_method: drive_api.files.get,
-            parameters: {'fileId' => @key}
-          ).body
-          @file = JSON.load(file_body)
-          break unless @file['error']
+        drive_services.each_with_index do |drive_service, idx|
+          begin
+            @file = drive_service.get_file(@key,
+              supports_team_drives: true,
+              fields: 'id, name, mimeType, webViewLink'
+            )
+          rescue Google::Apis::ClientError => e
+            # TK
+            puts e.message
+            puts e.backtrace
+          else
+            break
+          end
         end
-
-        raise "No clients able to access file #{@key}" if @file.nil?
 
         file_config = get_settings[@key] || {}
 
         # Allow overriding default file config with querystring parameters
-        default_export_format = file_config['format'] || Driveshaft::Exports.default_format_for(@file)
+        default_export_format = file_config['format'] || (Driveshaft::Exports.default_format_for(@file) if @file)
 
         @destinations = get_destinations(params) || file_config['destinations'] || []
         @export_format = params[:format] || default_export_format
 
-        if @file["error"]
-          flash[:error] = @file['error']['message']
+        if @file.nil?
+          flash[:error] = "No clients able to access file #{@key}"
         elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
           flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:index][:key]}/edit#gid=0'>Update or add</a> this file's configuration to make these settings persist."
         end
@@ -234,7 +237,7 @@ module Driveshaft
         puts e.backtrace
       end
 
-      if (!@file || @file["error"]) && request.request_method != "POST"
+      if @file.nil? && request.request_method != "POST"
         redirect back
       end
     end
@@ -294,15 +297,15 @@ module Driveshaft
     end
 
     def refresh!(bucket, key)
-      puts "Generating json for file '#{@file['title']}'"
+      puts "Generating json for file '#{@file.name}'"
 
       begin
-        export = Driveshaft::Exports.export(@file, @export_format, *clients)
+        export = Driveshaft::Exports.export(@file, @export_format, *drive_services)
         unless export[:body]
           flash[:error] = "No output found."
         end
       rescue Exception => e
-        flash[:error] = "Error converting #{@file['title'] || @file['id']} into #{@export_format}. (#{e.message})"
+        flash[:error] = "Error converting #{@file.name || @file.id} into #{@export_format}. (#{e.message})"
       end
 
       puts "Writing json file to #{bucket}/#{key}"
@@ -349,14 +352,6 @@ module Driveshaft
     rescue Exception => e
       puts "Error parsing S3 destination from '#{destination}'."
       nil
-    end
-
-    def drive_api
-      @drive_api ||= clients.first.discovered_api('drive', 'v2')
-    end
-
-    def plus_api
-      @plus_api ||= clients.first.discovered_api('plus', 'v1')
     end
 
   end

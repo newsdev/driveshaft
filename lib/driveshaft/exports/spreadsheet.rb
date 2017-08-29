@@ -1,21 +1,24 @@
 require 'csv'
+require 'google/apis/sheets_v4'
 
 module Driveshaft
   module Exports
 
-    def self.spreadsheet(file, client)
+    def self.spreadsheet(file, drive_service)
       data = {}
 
-      embedHtml   = client.execute(uri: file['embedLink']).body
-      sheet_gids  = embedHtml.scan(/gid=(\d+)/).map(&:first)
-      sheet_names = embedHtml.scan(/name: "([^"]+)"/).map(&:first)
+      sheets_service = Google::Apis::SheetsV4::SheetsService.new
+      sheets_service.authorization = drive_service.authorization
+      sheets = sheets_service.get_spreadsheet(file.id, fields: 'sheets.properties.sheetId,sheets.properties.title').sheets
 
-      sheet_gids.each_with_index do |gid, idx|
-        sheet_name = sheet_names[idx]
+      sheets.each do |sheet|
+        sheet_name = sheet.properties.title
         next if sheet_name.match(/:hide$/)
 
-        link     = file['exportLinks']['text/csv'] + "&gid=#{gid}"
-        csv_data = client.execute(uri: link).body.force_encoding(Encoding::UTF_8)
+        # There is currently no way to export data from the non-first sheet using the V3 Drive API.
+        # https://issuetracker.google.com/issues/36760272
+        # csv_data = drive_service.export_file(file.id, 'text/csv')
+        csv_data = drive_service.http(:get, "https://docs.google.com/spreadsheets/export?id=#{file.id}&exportFormat=csv&gid=#{sheet.properties.sheet_id}").force_encoding(Encoding::UTF_8)
 
         data[sheet_name] = []
 

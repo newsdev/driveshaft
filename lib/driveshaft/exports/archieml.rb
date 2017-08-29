@@ -4,15 +4,11 @@ require 'nokogiri'
 module Driveshaft
   module Exports
 
-    def self.archieml(file, client)
+    def self.archieml(file, drive_service)
       data = {}
 
-      link = file['exportLinks']['text/html']
-      response = client.execute(uri: link)
-
-      raise response.error_message if response.status.to_s != '200'
-
-      html_doc = Nokogiri::HTML(response.body)
+      file_html = drive_service.export_file(file.id, 'text/html')
+      html_doc  = Nokogiri::HTML(file_html)
 
       text = Driveshaft::Exports::Archieml.convert_node(html_doc.children[1].children[1])
       text.gsub!(/<[^<>]*>/) do |match|
