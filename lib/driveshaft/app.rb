@@ -253,6 +253,8 @@ module Driveshaft
         key = key.sub(/\.json$/, "-#{version}.json") if version
         settings = JSON.load($s3_resources.bucket(bucket).object(key).get.body).values.first
       rescue Exception => e
+        puts e.message
+        puts e.backtrace
         settings = nil
       end
 
@@ -308,6 +310,8 @@ module Driveshaft
         end
       rescue Exception => e
         flash[:error] = "Error converting #{@file.name || @file.id} into #{@export_format}. (#{e.message})"
+        puts e.message
+        puts e.backtrace
       end
 
       puts "Writing json file to #{bucket}/#{key}"
@@ -353,6 +357,8 @@ module Driveshaft
       [components[1], components[2..-1].join('/')]
     rescue Exception => e
       puts "Error parsing S3 destination from '#{destination}'."
+      puts e.message
+      puts e.backtrace
       nil
     end
 
