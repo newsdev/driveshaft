@@ -247,7 +247,7 @@ module Driveshaft
     # Can we make this work for any user's individual drive folder?
     def get_settings(version = nil) # TKTKTK
       if $settings[:index][:folder]
-        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false")
+        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false", page_size: 100)
         puts "files: #{search.files}"
 
         files = Hash[*search.files.map do |file|
