@@ -11,8 +11,7 @@ require 'google/api_client/client_secrets'
 
 $settings = {
   index: {
-    destination: ENV['DRIVESHAFT_SETTINGS_INDEX_DESTINATION'],
-    key: ENV['DRIVESHAFT_SETTINGS_INDEX_KEY']
+    folder: ENV['DRIVESHAFT_SETTINGS_INDEX_FOLDER']
   },
   auth: {
     required: ENV['DRIVESHAFT_SETTINGS_AUTH_REQUIRED'].to_s == 'true',

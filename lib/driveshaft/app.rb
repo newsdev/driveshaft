@@ -224,12 +224,12 @@ module Driveshaft
         # Allow overriding default file config with querystring parameters
         default_export_format = file_config['format'] || (Driveshaft::Exports.default_format_for(@file) if @file)
 
-        @destinations = get_destinations(params) || file_config['destinations'] || []
+        @destinations = get_destinations(params) || file_config['destinations'] || [get_default_destination(@file)]
         @export_format = params[:format] || default_export_format
 
         if @file.nil?
           flash[:error] = "No clients able to access file #{@key}"
-        elsif !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
+        elsif $settings[:index][:key] && !file_config.empty? && (file_config['destinations'] != @destinations || default_export_format != @export_format)
           flash[:info] = "You are using settings configured in the URL. Automated publishing may use a different format or destination. <a href='https://docs.google.com/a/nytimes.com/spreadsheets/d/#{$settings[:index][:key]}/edit#gid=0'>Update or add</a> this file's configuration to make these settings persist."
         end
 
@@ -246,28 +246,34 @@ module Driveshaft
 
     # Can we make this work for any user's individual drive folder?
     def get_settings(version = nil) # TKTKTK
-      return {} unless $settings[:index][:key]
+      if $settings[:index][:folder]
+        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents")
+        puts "files: #{search.files}"
 
-      begin
-        bucket, key = parse_destination($settings[:index][:destination])
-        key = key.sub(/\.json$/, "-#{version}.json") if version
-        settings = JSON.load($s3_resources.bucket(bucket).object(key).get.body).values.first
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace
-        settings = nil
+        files = Hash[*search.files.map do |file|
+          [file.id, {
+            key: file.id,
+            name: file.name,
+            destinations: [get_default_destination(file)]
+          }]
+        end.flatten]
+
+        files
+
+      else
+        return {}
       end
+    end
 
-      # Bootstrap the settings json
-      settings ||= [{'key' => $settings[:index][:key], 'publish' => $settings[:index][:destination]}]
-
-      files = Hash[*settings.map do |row|
-        file_config = row.dup
-        file_config['destinations'] = get_destinations(file_config) || []
-        [row['key'], file_config]
-      end.flatten]
-
-      files
+    def get_default_destination(file)
+      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-')}.json")
+      {
+        bucket: bucket,
+        key: key,
+        format: 'jsonp',
+        url: "http://#{bucket}/#{key}",
+        presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
+      }
     end
 
     # File configuration can have multiple destinations on S3, by specifying

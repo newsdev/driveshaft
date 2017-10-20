@@ -8,6 +8,8 @@
 * Use [Default Application Credentials](https://developers.google.com/identity/protocols/application-default-credentials). `GOOGLE_APPLICATION_CREDENTIALS` takes the place of `GOOGLE_APICLIENT_SERVICEACCOUNT`, and must specify the service account json's path as opposed to its value.
 * Other authentication methods (installed + app user authorization, api key) temporarily deprecated
 
+### Home folder instead of index file
+
 ## v0.1.6 - 2016-07-22
 
 * Fix for bug #28 around incorrectly convert Google Doc links to HTML.

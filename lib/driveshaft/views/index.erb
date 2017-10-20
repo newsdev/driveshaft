@@ -8,8 +8,8 @@
   <p>Drag one of the following links to your to your bookmarks toolbar to create publishing shortcuts you can click right from your Google Drive file.</p>
   <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-_]+)/);if(match){var url='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1];window.open(url+'/refresh?redirect=' + url);}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">Publish with Driveshaft</a> <small>(will publish to all configured S3 endpoints)</small></p>
   <p><a href="javascript:var match=location.pathname.match(/\/d\/([\w-_]+)/);if(match){location='<%= request.scheme %>://<%= request.host %>:<%= request.port %>/' + match[1]}else{alert('Could not find a Google Drive id on this page.')}" class="btn btn-sm btn-muted">View in Driveshaft</a></p>
-  <% if $settings[:index][:key] %>
-    <p>This list is powered by a spreadsheet that gets published out as json using Driveshaft. Refreshing the list simply publishes a new version of the json based on the current spreadsheet. You can revert to a previous version by visiting the <a href="/<%= $settings[:index][:key] %>">Driveshaft configuration</a> spreadsheet's page.</p>
+  <% if $settings[:index][:folder] %>
+    <p>This list displays all documents within a configured Google Drive folder. Adding files to the folder should make them appear here, with the most recent items appearing first.</p>
   <% end %>
 <% end %>
 
@@ -23,7 +23,7 @@
     </div>
     <div class="col-sm-5">
       <h5>Destinations on S3 (optional)</h5>
-      <input name="destinations" class="form-control input-sm" type="text" placeholder="e.g., s3://<%= File.dirname(($settings[:index][:destination] || 'BUCKET/KEY').sub(/^\w+:\/\//, '')) %>/output.json">
+      <input name="destinations" class="form-control input-sm" type="text" placeholder="e.g., s3://BUCKET/KEY.json">
     </div>
     <div class="col-sm-2">
       <h5>&nbsp;</h5>
@@ -34,7 +34,7 @@
 
 <hr>
 
-<% if $settings[:index][:key] %>
+<% if $settings[:index][:folder] %>
   <div class="form-group glyphicon-input">
     <input class="form-control" type="text" data-filter="name,key" data-target="#files" placeholder="Search files..." data-trigger="keyup">
     <i class="glyphicon glyphicon-search"></i>
@@ -42,8 +42,8 @@
 
   <div class="form-group">
     <span>
-      <a class="btn btn-sm btn-default" target="_blank" href="https://docs.google.com/a/nytimes.com/spreadsheets/d/<%= $settings[:index][:key] %>/edit#gid=0">Add a file</a>
-      <a class="btn btn-sm btn-danger" href="/<%= $settings[:index][:key] %>/refresh">Refresh this list</a>
+      <a class="btn btn-sm btn-primary" target="_blank" href="https://docs.google.com/a/nytimes.com/spreadsheets/create?usp=drive_web&folder=<%= $settings[:index][:folder] %>">Add a file</a>
+      <a class="btn btn-sm btn-default" target="_blank" href="https://drive.google.com/drive/u/0/folders/<%= $settings[:index][:folder] %>">View in Google Drive</a>
     </span>
     <span class="pull-right text-muted">Publishing to...</span>
   </div>
@@ -62,21 +62,18 @@
       </div>
       <div class="content-primary col-xs-12 col-sm-11 clearfix">
         <h4 class="pull-left">
-          <a href="/<%%= key %><%% if (format && format.length > 0) { %>?format=<%%= format %><%% } %>"><%%= name || key %></a>
+          <a href="/<%%= key %><%% if (typeof(format) !== 'undefined' && format && format.length > 0) { %>?format=<%%= format %><%% } %>"><%%= name || key %></a>
         </h4>
 
         <p class="text-right">
           <%% destinations.forEach(function(destination) { %>
-            <a class="btn btn-sm btn-default" href="<%%= destination.presigned_url || destination.url %>" target="_blank"><%%= destination.bucket %></a>
+            <a class="btn btn-xs btn-default" href="<%%= destination.presigned_url || destination.url %>" target="_blank"><%%= destination.bucket %></a>
           <%% }) %>
         </p>
       </div>
     </div>
   </div>
 
-  <footer>
-    <p><a href="/<%= $settings[:index][:key] %>">Restore</a> an old version of this list.</p>
-  </footer>
 <% else %>
   <p>
     You do not currently have an index page set up. To display a list of commonly used files, and gain the ability to store configuration for each of them, follow the instructions <a href="https://newsdev.github.io/driveshaft/">here</a>.
