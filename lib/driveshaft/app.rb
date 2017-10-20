@@ -247,7 +247,7 @@ module Driveshaft
     # Can we make this work for any user's individual drive folder?
     def get_settings(version = nil) # TKTKTK
       if $settings[:index][:folder]
-        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents")
+        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false")
         puts "files: #{search.files}"
 
         files = Hash[*search.files.map do |file|
@@ -266,7 +266,7 @@ module Driveshaft
     end
 
     def get_default_destination(file)
-      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-')}.json")
+      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.json")
       {
         bucket: bucket,
         key: key,
