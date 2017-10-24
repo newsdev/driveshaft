@@ -98,7 +98,7 @@ module Driveshaft
 
           timestamp: object.key.match(/(\d{8}-\d{6}).\w+$/)[1],
           copy: etags.key?(etag),
-          display: Time.strptime(File.basename(object.key).sub(/\.json$/, '').match(/(\d{8}-\d{6})$/)[1] + " +0000", "%Y%m%d-%H%M%S %Z").getlocal.strftime("%a %b %d %I:%M %p %Z")
+          display: Time.strptime(File.basename(object.key).sub(/\.jsonp?$/, '').match(/(\d{8}-\d{6})$/)[1] + " +0000", "%Y%m%d-%H%M%S %Z").getlocal.strftime("%a %b %d %I:%M %p %Z")
         }
         etags[etag] = 1
       end
@@ -248,7 +248,6 @@ module Driveshaft
     def get_settings(version = nil) # TKTKTK
       if $settings[:index][:folder]
         search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false", page_size: 100)
-        puts "files: #{search.files}"
 
         files = Hash[*search.files.map do |file|
           [file.id, {
