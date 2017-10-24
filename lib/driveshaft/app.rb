@@ -229,7 +229,7 @@ module Driveshaft
 
         @destinations = get_destinations(params) || file_config['destinations'] || [get_default_destination(@file)]
         @export_format = params[:format] || default_export_format
-        puts "export_format: #{export_format}"
+        puts "export_format: #{@export_format}"
 
         if @file.nil?
           flash[:error] = "No clients able to access file #{@key}"
@@ -271,11 +271,11 @@ module Driveshaft
     def get_default_destination(file)
       bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.jsonp")
       {
-        bucket: bucket,
-        key: key,
-        format: 'jsonp',
-        url: "https://#{bucket}/#{key}",
-        presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
+        'bucket' => bucket,
+        'key' => key,
+        'format' => 'jsonp',
+        'url' => "https://#{bucket}/#{key}",
+        'presigned_url' => ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
       }
     end
 
