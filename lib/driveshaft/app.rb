@@ -330,7 +330,8 @@ module Driveshaft
         $s3_resources.bucket(bucket).object(key.sub(/(\.\w+)$/, "-#{Time.now.utc.strftime("%Y%m%d-%H%M%S")}\\1"))
       ]
 
-      put_options = {acl: 'public-read'}.merge(export)
+      put_options = {}.merge(export)
+      # put_options = {acl: 'public-read'}.merge(export)
       objects.each do |object|
         object.put(put_options)
       end
