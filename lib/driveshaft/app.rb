@@ -219,7 +219,7 @@ module Driveshaft
           end
         end
 
-        file_config = get_settings[@key] || {}
+        file_config = get_settings[@key] || get_default_destination(@file) || {}
 
         # Allow overriding default file config with querystring parameters
         default_export_format = file_config['format'] || (Driveshaft::Exports.default_format_for(@file) if @file)
@@ -266,12 +266,12 @@ module Driveshaft
     end
 
     def get_default_destination(file)
-      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.json")
+      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.jsonp")
       {
         bucket: bucket,
         key: key,
         format: 'jsonp',
-        url: "http://#{bucket}/#{key}",
+        url: "https://#{bucket}/#{key}",
         presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
       }
     end
