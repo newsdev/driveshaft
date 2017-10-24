@@ -220,12 +220,16 @@ module Driveshaft
         end
 
         file_config = get_settings[@key] || get_default_destination(@file) || {}
+        puts "file_config"
+        puts file_config
 
         # Allow overriding default file config with querystring parameters
         default_export_format = file_config['format'] || (Driveshaft::Exports.default_format_for(@file) if @file)
+        puts "default_export_format: #{default_export_format}"
 
         @destinations = get_destinations(params) || file_config['destinations'] || [get_default_destination(@file)]
         @export_format = params[:format] || default_export_format
+        puts "export_format: #{export_format}"
 
         if @file.nil?
           flash[:error] = "No clients able to access file #{@key}"
