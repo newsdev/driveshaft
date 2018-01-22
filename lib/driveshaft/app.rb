@@ -252,7 +252,7 @@ module Driveshaft
     # Can we make this work for any user's individual drive folder?
     def get_settings(version = nil) # TKTKTK
       if $settings[:index][:folder]
-        search = drive_services.first.list_files(page_size: 10, supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false", page_size: 100)
+        search = drive_services.first.list_files(supports_team_drives: true, include_team_drive_items: true, order_by: 'createdTime desc', q: "\"#{$settings[:index][:folder]}\" in parents and trashed = false", page_size: 100)
 
         files = Hash[*search.files.map do |file|
           [file.id, {
@@ -270,11 +270,12 @@ module Driveshaft
     end
 
     def get_default_destination(file)
-      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.jsonp")
+      extension = (params[:format].nil? || params[:format] == 'jsonp') ? 'jsonp' : 'json'
+      bucket, key = parse_destination("s3://int.nyt.com/data/driveshaft/#{file.name.gsub(/[^A-Za-z0-9]/, '-').downcase}.#{extension}")
       {
         bucket: bucket,
         key: key,
-        format: 'jsonp',
+        format: params[:format] || 'jsonp',
         url: "https://#{bucket}/#{key}",
         presigned_url: ($s3_presigner.presigned_url(:get_object, bucket: bucket, key: key) rescue nil)
       }
@@ -330,8 +331,7 @@ module Driveshaft
         $s3_resources.bucket(bucket).object(key.sub(/(\.\w+)$/, "-#{Time.now.utc.strftime("%Y%m%d-%H%M%S")}\\1"))
       ]
 
-      put_options = {}.merge(export)
-      # put_options = {acl: 'public-read'}.merge(export)
+      put_options = {cache_control: 'public, max-age=10'}.merge(export)
       objects.each do |object|
         object.put(put_options)
       end
