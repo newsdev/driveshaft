@@ -13,5 +13,5 @@ gem 'aws-sdk', '~> 2.0.23', :require => false
 
 gem 'google-api-client', '~> 0.11.3'
 
-gem 'nokogiri', '~> 1.8.0'
+gem 'nokogiri', '~> 1.8.2'
 gem 'archieml', '~> 0.3.0'
