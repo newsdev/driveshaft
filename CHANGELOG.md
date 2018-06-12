@@ -1,6 +1,31 @@
 # Driveshaft Changelog
 
-## v0.1.6 - 2916-07-22
+## v1.0.0 - WIP
+
+### Authentication
+
+* Upgraded google-api-client gem
+* Use [Default Application Credentials](https://developers.google.com/identity/protocols/application-default-credentials). `GOOGLE_APPLICATION_CREDENTIALS` takes the place of `GOOGLE_APICLIENT_SERVICEACCOUNT`. It must specify the service account json's path as opposed to its value.
+* Other authentication methods deprecated:
+  * `DRIVESHAFT_SETTINGS_AUTH_REQUIRED`
+  * `DRIVESHAFT_SETTINGS_AUTH_DOMAIN`
+  * `GOOGLE_APICLIENT_KEY`
+  * `GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED`
+  * `GOOGLE_APICLIENT_CLIENTSECRETS_WEB`
+
+### Drive v3
+
+* Driveshaft no longer uses an index json file to keep track of what to display on the homepage. Intead, a Google Team Drive folder should be specified, with the application's service account given read access. All files present in the folder will show up on the homepage in reverse chronological order.
+  * Set `DRIVESHAFT_SETTINGS_INDEX_FOLDER` to the Drive Folder ID.
+  * `DRIVESHAFT_SETTINGS_INDEX_DESTINATION` and `DRIVESHAFT_SETTINGS_INDEX_KEY` are both deprecated.
+
+### Assets
+
+* `npm` is used for asset management instead of `bower`.
+
+### Home folder instead of index file
+
+## v0.1.6 - 2016-07-22
 
 * Fix for bug #28 around incorrectly convert Google Doc links to HTML.
 

@@ -24,9 +24,6 @@ Be sure to have the following system dependencies installed:
 # Git, Ruby, Node
 $ brew install git node ruby
 
-# Bower
-$ npm install -g bower
-
 # Bundler
 $ gem install bundler
 ```
@@ -36,30 +33,20 @@ $ gem install bundler
 ``` bash
 $ git clone git@github.com:newsdev/driveshaft.git
 $ cd driveshaft
-$ bower install
+$ npm install
 $ bundle install
 ```
 
 ### Environmental Variables
 
-Driveshaft uses environmental variables for configuration. Set the following variables either at runtime on the commandline, or in your `/~.bash_profile`.
+Driveshaft uses environmental variables for configuration. Set the following variables either at runtime on the commandline, or in your `~/.bash_profile`.
 
-Set **at least one**, or several, of the following to authenticate against the Google API. You will need to set up a [Google Developers Project](https://console.developers.google.com/project) with the Drive API enabled. Then create a set of credentials. Public API Keys, and any of the three OAuth2 mechanisms, are supported.
+Create a service account to authenticate against the Google API. You will need to set up a [Google Developers Project](https://console.developers.google.com/project) with the Drive API enabled. Then create a set of [credentials](https://console.cloud.google.com/apis/credentials). Choose a **service account key**, and download the contents as JSON.
 
-To use an API Key, set `GOOGLE_APICLIENT_KEY` to the key. For any type of OAuth certificate, set the variable to a path to the certificate file, or the contents of the certificate itself.
+Store the JSON file on your computer (or your deployed environment), and set `GOOGLE_APPLICATION_CREDENTIALS` to the filepath where it is stored.
 
 ``` bash
-# Public API Key
-GOOGLE_APICLIENT_KEY="***"
-
-# Native Application Client
-GOOGLE_APICLIENT_CLIENTSECRETS_INSTALLED="***"
-
-# Web Application Client
-GOOGLE_APICLIENT_CLIENTSECRETS_WEB="***"
-
-# Service Account
-GOOGLE_APICLIENT_CLIENTSECRETS_SERVICEACCOUNT="***"
+GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceaccount.json"
 ```
 
 Required for S3 access. Use credentials that have access to any S3 buckets you wish to use.
@@ -73,16 +60,8 @@ AWS_REGION="us-east-1"
 Driveshaft settings:
 
 ``` bash
-DRIVESHAFT_SETTINGS_AUTH_REQUIRED="false" # true to require client-side login
-DRIVESHAFT_SETTINGS_AUTH_DOMAIN="nytimes.com" # restrict login to a single domain
 DRIVESHAFT_SETTINGS_MAX_VERSIONS="5" # set to a maximum number of previous file versions to keep on S3
-```
-
-Optional drive key and s3 destination for a Google Spreadsheet to use to power the index page. It should follow the format of [this spreadhseet](https://docs.google.com/spreadsheets/d/16NZKPy_kyWb_c0jBLo_sTvyoGUrs-ISG7uMDHBMgM5U/edit#gid=0) (you can copy the spreadsheet into a new one to start).
-
-``` bash
-DRIVESHAFT_SETTINGS_INDEX_DESTINATION="s3://BUCKET/PATH.json"
-DRIVESHAFT_SETTINGS_INDEX_KEY="DRIVE_KEY"
+DRIVESHAFT_SETTINGS_INDEX_FOLDER="****" # a Google Team Drive folder ID
 ```
 
 ### Run the app locally

@@ -6,14 +6,14 @@ module Driveshaft
   module Exports
     FORMATS = (Driveshaft::Exports.methods - Object.methods)
 
-    def self.export(file, format, *clients)
+    def self.export(file, format, *drive_services)
       # Try multiple clients (first a server client if available, then user's
       # browser session).
       error = nil
 
-      clients.each do |client|
+      drive_services.each do |drive_service|
         begin
-          return Driveshaft::Exports.send(format.to_sym, file, client)
+          return Driveshaft::Exports.send(format.to_sym, file, drive_service)
         rescue Exception => e
           error = e
         end
@@ -26,7 +26,7 @@ module Driveshaft
       {
         'application/vnd.google-apps.spreadsheet' => 'spreadsheet',
         'application/vnd.google-apps.document' => 'archieml'
-      }[file['mimeType']]
+      }[file.mime_type]
     end
   end
 end
