@@ -6,8 +6,8 @@ gem 'rack-flash3', '~> 1.0.5'
 gem 'rake', '~> 12.0.0'
 gem 'puma', '~> 3.9.1'
 
-gem 'sinatra', '~> 2.0.0'
-gem 'sinatra-contrib', '~> 2.0.0'
+gem 'sinatra', '~> 2.0.3'
+gem 'sinatra-contrib', '~> 2.0.3'
 
 gem 'aws-sdk', '~> 2.0.23', :require => false
 
